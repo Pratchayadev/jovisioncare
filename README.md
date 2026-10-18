@@ -7,7 +7,7 @@
 | ส่วน | ใช้ |
 |---|---|
 | Framework | **Next.js 15 (App Router) + TypeScript** — Server Components, ISR |
-| Hosting | **Vercel** (region สิงคโปร์ `sin1` ใกล้ไทยที่สุด) |
+| Hosting | **Vercel** — function region `iad1` ให้อยู่ที่เดียวกับฐานข้อมูล Turso (us-east-1) · หน้าเว็บ cache ที่ CDN ทั่วโลก |
 | ฐานข้อมูล | **Turso** (SQLite บนคลาวด์) + **Drizzle ORM** — ตอนพัฒนาใช้ไฟล์ SQLite ในเครื่อง |
 | รูปที่อัปโหลด | **Cloudflare R2** · ย่อรูปในเบราว์เซอร์ก่อนส่ง + แปลง WebP ด้วย `sharp` · แสดงผลผ่าน `next/image` (AVIF/WebP) |
 | หลังบ้าน | `/admin` — Server Actions, เซสชัน cookie แบบเซ็น HMAC, รหัสผ่านแบบ scrypt |
@@ -45,7 +45,9 @@ vercel.com → **Add New → Project** → เลือก repo → **อย่�
 
 ### 3. ฐานข้อมูล Turso
 
-ในโปรเจกต์ Vercel ไปที่ **Storage → Create Database → Turso** แล้วเลือก region ใกล้สิงคโปร์ เมื่อ Connect กับโปรเจกต์ Vercel จะใส่ `TURSO_DATABASE_URL` และ `TURSO_AUTH_TOKEN` ให้อัตโนมัติ
+เปิด [vercel.com/marketplace/tursocloud](https://vercel.com/marketplace/tursocloud) → **Install** → สร้างฐานข้อมูล → Connect กับโปรเจกต์ Vercel จะใส่ `<ชื่อ>_TURSO_DATABASE_URL` และ `<ชื่อ>_TURSO_AUTH_TOKEN` ให้อัตโนมัติ (โค้ดอ่านได้ทั้งแบบมีและไม่มีคำนำหน้า)
+
+ถ้าฐานข้อมูลไม่ได้อยู่ที่ us-east-1 ให้แก้ `regions` ใน `vercel.json` ให้ตรงกับที่ตั้งฐานข้อมูล (เช่น สิงคโปร์ = `sin1`, โตเกียว = `hnd1`)
 
 (หรือสร้างที่ turso.tech เองแล้วใส่ 2 ค่านี้ใน Environment Variables)
 
@@ -125,7 +127,7 @@ src/
   db/schema.ts       โครงสร้างตาราง · migrate.ts · seed.ts
   lib/               db, env, queries, auth, storage (R2 / local), site config
 drizzle/             ไฟล์ migration
-vercel.json          ตั้ง region สิงคโปร์
+vercel.json          ตั้ง function region ให้ตรงกับฐานข้อมูล
 ```
 
 คำสั่งอื่น: `npm run db:studio` (เปิดดู/แก้ฐานข้อมูลผ่านเว็บ)
