@@ -5,7 +5,7 @@ import LensLab from "@/components/LensLab";
 import Collection from "@/components/Collection";
 import JsonLd from "@/components/JsonLd";
 import { getBrands, getCategories, getPublishedProducts, toCard } from "@/lib/queries";
-import { absoluteUrl, branches, links, PHONE_INTL, reviews, site, SITE_URL, storePhotos } from "@/lib/site";
+import { absoluteUrl, branches, links, PHONE_INTL, reviews, site, SITE_URL, storePhotos, storePhotosNongKhai } from "@/lib/site";
 import type { Metadata } from "next";
 
 export const revalidate = 3600;
@@ -81,6 +81,7 @@ export default async function Home() {
             <figcaption>หน้าร้าน · สาขาอุดรธานี</figcaption>
           </figure>
         </div>
+        <p className="store-branch">สาขาอุดรธานี — เจริญศรีปาร์ค หนองประจักษ์</p>
         <div className="store-photos">
           {storePhotos.map((ph) => (
             <figure key={ph.src} className="store-photo" data-reveal="">
@@ -92,6 +93,14 @@ export default async function Home() {
             <span>2 สาขา อุดรธานี · หนองคาย<br />เปิดทุกวัน 10:00–20:00 น.</span>
             <span className="go">ดูแผนที่ →</span>
           </Link>
+        </div>
+        <p className="store-branch">สาขาหนองคาย — อัศวรรณ ช้อปปิ้ง 1 (โลตัส)</p>
+        <div className="store-photos-wide">
+          {storePhotosNongKhai.map((ph) => (
+            <figure key={ph.src} className="store-photo" data-reveal="">
+              <Image src={ph.src} alt={ph.alt} fill sizes="(min-width: 900px) 300px, 100vw" />
+            </figure>
+          ))}
         </div>
       </section>
 

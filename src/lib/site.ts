@@ -85,6 +85,13 @@ export const reviews = [
 ].map(([handle, brand, branch]) => ({ handle, brand, branch }));
 
 // รูปบรรยากาศร้าน (public/images/store) — alt ช่วยให้ติด Google Images
+export const storePhotosNongKhai = [
+  { src: "/images/store/nk-eye-exam.jpg", alt: "ตรวจวัดสายตาด้วยกรอบทดลองเลนส์ ร้านแว่นหนองคาย J.O. Vision Care" },
+  { src: "/images/store/nk-auto-refractor.jpg", alt: "เครื่องวัดสายตาอัตโนมัติ แสดงค่าสายตาบนจอ ร้านแว่นหนองคาย" },
+  { src: "/images/store/nk-trial-frame.jpg", alt: "ลูกค้าลองเลนส์ระหว่างตรวจวัดสายตาอย่างละเอียด สาขาหนองคาย" },
+  { src: "/images/store/nk-store-bags.jpg", alt: "ถุงร้านเจ.โอ.วิชั่นแคร์ และชั้นโชว์แว่นแบรนด์แท้ สาขาหนองคาย" },
+];
+
 export const storePhotos = [
   { src: "/images/store/interior-eye-test.jpg", alt: "มุมตรวจวัดสายตาและโต๊ะลองกรอบแว่น ภายในร้าน J.O. Vision Care" },
   { src: "/images/store/entrance.jpg", alt: "ทางเข้าร้านแว่น J.O. Vision Care โทนขาวสว่าง พร้อมโต๊ะโชว์กรอบแว่น" },
