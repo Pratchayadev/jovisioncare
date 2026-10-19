@@ -16,7 +16,7 @@ export default function IgPost({ r }: { r: Review }) {
   const href = r.postUrl || `https://www.instagram.com/${encodeURIComponent(r.handle)}`;
   const place = r.branch ? `J.O. Vision Care · ${r.branch}` : "J.O. Vision Care";
   return (
-    <a href={href} target="_blank" rel="noopener" className="ig" data-reveal="" aria-label={`โพสต์ของ @${r.handle} บน Instagram`}>
+    <a href={href} target="_blank" rel="noopener" className="ig" data-reveal="" data-track-area="review" aria-label={`โพสต์ของ @${r.handle} บน Instagram`}>
       <div className="ig-head">
         <span className="ig-ring">
           {r.avatar ? (

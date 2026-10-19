@@ -127,7 +127,7 @@ export default async function Home() {
         </div>
         <div className="grid-branches">
           {branches.map((b) => (
-            <article key={b.en} className="branch" data-reveal="">
+            <article key={b.en} className="branch" data-reveal="" data-track-area="branch-card" data-track-branch={b.id}>
               <div style={{ display: "grid", gap: 2 }}>
                 <span className="branch-en">{b.en}</span>
                 <h3>{b.h}</h3>

@@ -12,7 +12,7 @@ export default function ContactSection({ categories, brands, c }: { categories: 
           <h2 id="contact-title" className="contact-title">TALK TO US.</h2>
           <p className="lead" style={{ maxWidth: 520 }}>สั่งซื้อ สอบถามราคา หรือนัดตรวจวัดสายตา ทักแอดมินได้ทุกช่องทาง ตอบไวทุกวัน</p>
         </div>
-        <div className="grid-contact">
+        <div className="grid-contact" data-track-area="contact">
           {c.line && <a className="ccard" href={c.line} target="_blank" rel="noopener"><b>LINE OA</b><span>{c.lineId || "เพิ่มเพื่อน"}</span></a>}
           <a className="ccard" href={c.fbUdon} target="_blank" rel="noopener"><b>MESSENGER</b><span>เพจสาขาอุดรธานี</span></a>
           <a className="ccard" href={c.fbNongkhai} target="_blank" rel="noopener"><b>MESSENGER</b><span>เพจสาขาหนองคาย</span></a>

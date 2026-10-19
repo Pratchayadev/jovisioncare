@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import ProductGallery from "@/components/ProductGallery";
 import ProductCard from "@/components/ProductCard";
 import AskButtons from "@/components/AskButtons";
+import TrackView from "@/components/TrackView";
 import JsonLd from "@/components/JsonLd";
 import { getProductBySlug, getRelatedProducts, toCard } from "@/lib/queries";
 import { absoluteUrl, clip, productDesc, site } from "@/lib/site";
@@ -71,7 +72,8 @@ export default async function ProductPage({ params }: Props) {
         </ol>
       </div>
       <div className="page-body">
-        <article className="pd">
+        <TrackView code={p.code} name={p.name} brand={card.brand} />
+        <article className="pd" data-track-area="product-page">
           <ProductGallery images={card.images} priority />
           <div className="pd-info">
             {p.brand ? <Link href={`/brand/${p.brand.slug}`} className="pd-brand">{p.brand.name}</Link> : null}

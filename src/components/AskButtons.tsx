@@ -4,7 +4,7 @@ export default function AskButtons({ p, c }: { p: { brand: string; name: string;
   const line = lineMessage(c, `สนใจสินค้า ${p.brand} ${p.name} (รหัส ${p.code})`);
   return (
     <>
-      <div className="ask">
+      <div className="ask" data-track-product={p.code}>
         {line && <a className="solid" href={line} target="_blank" rel="noopener">LINE</a>}
         <a className={line ? undefined : "solid"} href={c.fbUdon} target="_blank" rel="noopener">Messenger</a>
         <a href={c.igInbox} target="_blank" rel="noopener">IG</a>

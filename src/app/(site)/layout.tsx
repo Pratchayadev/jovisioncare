@@ -3,6 +3,7 @@ import SiteHeader from "@/components/SiteHeader";
 import QuickDock from "@/components/QuickDock";
 import ContactSection from "@/components/ContactSection";
 import Reveal from "@/components/Reveal";
+import Analytics from "@/components/Analytics";
 import { getBrands, getCategories, getPublishedReviews } from "@/lib/queries";
 import { getContact } from "@/lib/settings";
 
@@ -17,6 +18,7 @@ export default async function SiteLayout({ children }: { children: React.ReactNo
       </main>
       <QuickDock c={c} />
       <Reveal />
+      <Analytics />
     </>
   );
 }

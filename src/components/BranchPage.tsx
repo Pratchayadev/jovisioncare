@@ -64,7 +64,7 @@ export default async function BranchPage({ id }: { id: BranchId }) {
       </div>
 
       <div className="page-body" style={{ paddingBottom: 24 }}>
-        <section className="bp-info" aria-label={`ที่อยู่และเวลาเปิดสาขา${b.province}`}>
+        <section className="bp-info" aria-label={`ที่อยู่และเวลาเปิดสาขา${b.province}`} data-track-area="branch-page" data-track-branch={b.id}>
           <div className="branch" style={{ alignContent: "start" }}>
             <div style={{ display: "grid", gap: 2 }}>
               <span className="branch-en">{b.en}</span>
