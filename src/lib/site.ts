@@ -30,25 +30,42 @@ export const links = {
 export const lineMessage = (text: string) =>
   links.line ? `https://line.me/R/oaMessage/${links.lineOaId}/?` + encodeURIComponent(text) : null;
 
+// เวลาเปิด–ปิด (ใช้ทั้งบนหน้าเว็บและข้อมูลสำหรับ Google)
+const OPEN = "10:00";
+const CLOSE = "20:00";
+const navUrl = (lat: number, lng: number) => `https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}`;
+
 export const branches = [
   {
     en: "UDON THANI",
     h: "ร้านแว่นอุดร — สาขาอุดรธานี",
+    place: "เจริญศรีปาร์ค หนองประจักษ์",
     locality: "อุดรธานี",
-    addr: "[ใส่ที่อยู่สาขาอุดรธานี]",
-    hours: "[เวลาเปิด–ปิด]",
-    tel: "[เบอร์โทร]",
-    map: "https://www.google.com/maps/search/J.O.+Vision+Care+อุดรธานี",
+    postalCode: "41000",
+    addr: "เจริญศรีปาร์ค หนองประจักษ์ อ.เมืองอุดรธานี จ.อุดรธานี 41000",
+    lat: 17.418690,
+    lng: 102.785187,
+    opens: OPEN,
+    closes: CLOSE,
+    hours: `${OPEN}–${CLOSE} น.`,
+    tel: "", // ใส่เบอร์เมื่อพร้อม เช่น "042-123456" — ว่างไว้ = ไม่แสดงแถวโทร
+    map: navUrl(17.41869, 102.785187),
     fb: links.fbUdon,
   },
   {
     en: "NONG KHAI",
     h: "ร้านแว่นหนองคาย — สาขาหนองคาย",
+    place: "ห้างสรรพสินค้าอัศวรรณ ช้อปปิ้ง 1 (โลตัส)",
     locality: "หนองคาย",
-    addr: "[ใส่ที่อยู่สาขาหนองคาย]",
-    hours: "[เวลาเปิด–ปิด]",
-    tel: "[เบอร์โทร]",
-    map: "https://www.google.com/maps/search/J.O.+Vision+Care+หนองคาย",
+    postalCode: "43000",
+    addr: "ห้างสรรพสินค้าอัศวรรณ ช้อปปิ้ง 1 (โลตัส) อ.เมืองหนองคาย จ.หนองคาย 43000",
+    lat: 17.871762,
+    lng: 102.742839,
+    opens: OPEN,
+    closes: CLOSE,
+    hours: `${OPEN}–${CLOSE} น.`,
+    tel: "",
+    map: navUrl(17.871762, 102.742839),
     fb: links.fbNongkhai,
   },
 ];

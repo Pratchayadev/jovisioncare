@@ -33,7 +33,11 @@ export default async function Home() {
         url: SITE_URL,
         image: absoluteUrl(site.ogImage),
         logo: absoluteUrl("/images/logo-og.jpg"),
-        address: { "@type": "PostalAddress", addressLocality: b.locality, addressRegion: b.locality, addressCountry: "TH" },
+        address: { "@type": "PostalAddress", streetAddress: b.place, addressLocality: `เมือง${b.locality}`, addressRegion: b.locality, postalCode: b.postalCode, addressCountry: "TH" },
+        geo: { "@type": "GeoCoordinates", latitude: b.lat, longitude: b.lng },
+        hasMap: `https://www.google.com/maps/search/?api=1&query=${b.lat},${b.lng}`,
+        openingHoursSpecification: [{ "@type": "OpeningHoursSpecification", dayOfWeek: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"], opens: b.opens, closes: b.closes }],
+        ...(b.tel ? { telephone: b.tel } : {}),
         sameAs: [b.fb, links.ig, links.tiktok],
         priceRange: "฿฿",
       })),
@@ -123,7 +127,7 @@ export default async function Home() {
               <dl>
                 <dt>ที่อยู่</dt><dd>{b.addr}</dd>
                 <dt>เวลา</dt><dd>{b.hours}</dd>
-                <dt>โทร</dt><dd>{b.tel}</dd>
+                {b.tel && (<><dt>โทร</dt><dd><a href={`tel:${b.tel.replace(/[^0-9+]/g, "")}`}>{b.tel}</a></dd></>)}
               </dl>
               <div className="row-btns">
                 <a href={b.map} target="_blank" rel="noopener" className="pill solid">นำทาง Google Maps</a>
