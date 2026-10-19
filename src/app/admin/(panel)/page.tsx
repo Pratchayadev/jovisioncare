@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { count, eq } from "drizzle-orm";
 import { db, t } from "@/lib/db";
+import { dbUrl } from "@/lib/env";
 
 export const dynamic = "force-dynamic";
 
@@ -13,6 +14,8 @@ export default async function Dashboard() {
     n(db.select({ c: count() }).from(t.brands)),
     n(db.select({ c: count() }).from(t.reviews)),
   ]);
+  const init = await db.query.settings.findFirst({ where: eq(t.settings.key, "db_initialized_at") });
+  const host = (() => { try { return new URL(dbUrl.replace(/^libsql:/, "https:")).host || dbUrl; } catch { return dbUrl; } })();
   return (
     <>
       <div className="adm-head">
@@ -34,6 +37,9 @@ export default async function Dashboard() {
           <li>เปลี่ยนแล้วหน้าเว็บอัปเดตทันที และ <code>/sitemap.xml</code> อัปเดตอัตโนมัติ</li>
         </ul>
       </div>
+      <p style={{ marginTop: 18, fontSize: 12, color: "var(--muted)", fontFamily: "IBM Plex Mono, monospace", wordBreak: "break-all" }}>
+        ฐานข้อมูล: {host} · เริ่มใช้: {init?.value ? new Date(init.value).toLocaleString("th-TH", { timeZone: "Asia/Bangkok" }) : "—"} · รีวิว {reviews} · สินค้า {products}
+      </p>
     </>
   );
 }
