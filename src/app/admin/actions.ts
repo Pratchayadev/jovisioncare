@@ -8,6 +8,8 @@ import { checkCredentials, requireAdmin } from "@/lib/admin";
 import { createSessionToken, SESSION_COOKIE } from "@/lib/auth";
 import { slugify } from "@/lib/slug";
 import { deleteImage, saveImage } from "@/lib/storage";
+import { BRANCH_IDS, DAYS, parseLatLng } from "@/lib/branches";
+import { branchKey } from "@/lib/settings";
 
 export type FormState = { error?: string } | undefined;
 
@@ -291,6 +293,31 @@ export async function saveSettings(_: FormState, f: FormData): Promise<FormState
   };
   for (const [key, value] of Object.entries(values))
     await db.insert(t.settings).values({ key, value }).onConflictDoUpdate({ target: t.settings.key, set: { value, updatedAt: new Date() } });
+  refresh();
+  return { ok: true };
+}
+
+/* ---------- Branches (สาขา) ---------- */
+export async function saveBranch(_: FormState, f: FormData): Promise<FormState & { ok?: boolean }> {
+  await requireAdmin();
+  const id = str(f, "branchId") as (typeof BRANCH_IDS)[number];
+  if (!BRANCH_IDS.includes(id)) return { error: "ไม่พบสาขา" };
+
+  const place = str(f, "place"), line1 = str(f, "line1"), district = str(f, "district"), province = str(f, "province");
+  const postalCode = str(f, "postalCode"), opens = str(f, "opens"), closes = str(f, "closes");
+  if (!place || !line1 || !district || !province) return { error: "กรุณากรอกชื่อสถานที่ ที่อยู่ อำเภอ และจังหวัดให้ครบ" };
+  if (!/^\d{5}$/.test(postalCode)) return { error: "รหัสไปรษณีย์ต้องเป็นตัวเลข 5 หลัก" };
+  const time = /^([01]\d|2[0-3]):[0-5]\d$/;
+  if (!time.test(opens) || !time.test(closes)) return { error: "เวลาเปิด–ปิดต้องอยู่ในรูปแบบ 10:00" };
+  if (opens >= closes) return { error: "เวลาปิดต้องหลังเวลาเปิด" };
+  const pos = parseLatLng(str(f, "latlng"));
+  if (!pos) return { error: "พิกัดไม่ถูกต้อง — ใส่แบบ 17.418690, 102.785187 หรือวางลิงก์ Google Maps ที่มีพิกัด" };
+  if (pos.lat < 5 || pos.lat > 21 || pos.lng < 97 || pos.lng > 106) return { error: "พิกัดอยู่นอกประเทศไทย — ตรวจสอบอีกครั้ง" };
+  const days = DAYS.map(([d]) => d).filter((d) => f.getAll("days").includes(d));
+  if (!days.length) return { error: "เลือกวันที่เปิดอย่างน้อย 1 วัน" };
+
+  const value = JSON.stringify({ place, line1, subdistrict: str(f, "subdistrict").replace(/^ต\.\s*/, ""), district: district.replace(/^อ\.\s*/, ""), province: province.replace(/^จ\.\s*/, ""), postalCode, lat: pos.lat, lng: pos.lng, opens, closes, days });
+  await db.insert(t.settings).values({ key: branchKey(id), value }).onConflictDoUpdate({ target: t.settings.key, set: { value, updatedAt: new Date() } });
   refresh();
   return { ok: true };
 }

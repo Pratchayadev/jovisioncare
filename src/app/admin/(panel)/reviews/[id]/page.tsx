@@ -4,7 +4,7 @@ import { db, t } from "@/lib/db";
 import ReviewForm from "@/components/admin/ReviewForm";
 import ConfirmDelete from "@/components/admin/ConfirmDelete";
 import { getBrands } from "@/lib/queries";
-import { branches } from "@/lib/site";
+import { DEFAULT_BRANCHES } from "@/lib/branches";
 import { deleteReview } from "../../../actions";
 
 export const dynamic = "force-dynamic";
@@ -19,7 +19,7 @@ export default async function EditReview({ params }: { params: Promise<{ id: str
         <h1>แก้ไขรีวิว</h1><span className="sub">@{review.handle}</span>
         <div className="actions"><ConfirmDelete action={deleteReview} id={review.id} label="ลบรีวิวนี้" /></div>
       </div>
-      <ReviewForm key={review.updatedAt.getTime()} review={review} branches={branches.map((b) => b.locality)} brands={brands.map((b) => b.name)} />
+      <ReviewForm key={review.updatedAt.getTime()} review={review} branches={Object.values(DEFAULT_BRANCHES).map((b) => b.province)} brands={brands.map((b) => b.name)} />
     </>
   );
 }

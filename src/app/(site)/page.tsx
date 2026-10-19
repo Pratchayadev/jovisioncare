@@ -6,8 +6,8 @@ import Collection from "@/components/Collection";
 import JsonLd from "@/components/JsonLd";
 import { getBrands, getCategories, getPublishedProducts, getPublishedReviews, toCard } from "@/lib/queries";
 import IgPost from "@/components/IgPost";
-import { absoluteUrl, branches, site, SITE_URL, storePhotos, storePhotosNongKhai } from "@/lib/site";
-import { getContact } from "@/lib/settings";
+import { absoluteUrl, site, SITE_URL, storePhotos, storePhotosNongKhai } from "@/lib/site";
+import { getBranches, getContact } from "@/lib/settings";
 import type { Metadata } from "next";
 
 export const revalidate = 3600;
@@ -21,6 +21,8 @@ export const metadata: Metadata = {
 
 export default async function Home() {
   const [products, categories, brands, reviews, c] = await Promise.all([getPublishedProducts({ featuredOnly: true, limit: 24 }), getCategories(), getBrands(), getPublishedReviews(), getContact()]);
+  const branches = await getBranches();
+  const [udon, nongkhai] = branches;
   const cards = products.map(toCard);
 
   const jsonLd = {
@@ -30,15 +32,22 @@ export default async function Home() {
       ...branches.map((b, i) => ({
         "@type": "Optician",
         "@id": `${SITE_URL}/#branch-${i + 1}`,
-        name: `J.O. Vision Care สาขา${b.locality}`,
-        alternateName: `ร้านแว่น${b.locality === "อุดรธานี" ? "อุดร" : b.locality} J.O. Vision Care`,
+        name: `J.O. Vision Care สาขา${b.province}`,
+        alternateName: `ร้านแว่น${b.short} J.O. Vision Care`,
         url: SITE_URL,
         image: absoluteUrl(site.ogImage),
         logo: absoluteUrl("/images/logo-og.jpg"),
-        address: { "@type": "PostalAddress", streetAddress: b.place, addressLocality: `เมือง${b.locality}`, addressRegion: b.locality, postalCode: b.postalCode, addressCountry: "TH" },
+        address: {
+          "@type": "PostalAddress",
+          streetAddress: [b.line1, b.subdistrict && `ต.${b.subdistrict}`].filter(Boolean).join(" "),
+          addressLocality: b.district,
+          addressRegion: b.province,
+          postalCode: b.postalCode,
+          addressCountry: "TH",
+        },
         geo: { "@type": "GeoCoordinates", latitude: b.lat, longitude: b.lng },
-        hasMap: `https://www.google.com/maps/search/?api=1&query=${b.lat},${b.lng}`,
-        openingHoursSpecification: [{ "@type": "OpeningHoursSpecification", dayOfWeek: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"], opens: b.opens, closes: b.closes }],
+        hasMap: b.mapView,
+        openingHoursSpecification: [{ "@type": "OpeningHoursSpecification", dayOfWeek: b.days, opens: b.opens, closes: b.closes }],
         ...(c.phoneIntl ? { telephone: c.phoneIntl } : {}),
         sameAs: [c[b.fbKey], c.ig, c.tiktok],
         priceRange: "฿฿",
@@ -83,7 +92,7 @@ export default async function Home() {
             <figcaption>หน้าร้าน · สาขาอุดรธานี</figcaption>
           </figure>
         </div>
-        <p className="store-branch">สาขาอุดรธานี — เจริญศรีปาร์ค หนองประจักษ์</p>
+        <p className="store-branch">สาขา{udon.province} — {udon.place}</p>
         <div className="store-photos">
           {storePhotos.map((ph) => (
             <figure key={ph.src} className="store-photo" data-reveal="">
@@ -92,11 +101,11 @@ export default async function Home() {
           ))}
           <Link href="#branches" className="store-tile" data-reveal="">
             <span className="display">COME SEE US.</span>
-            <span>2 สาขา อุดรธานี · หนองคาย<br />เปิดทุกวัน 10:00–20:00 น.</span>
+            <span>{branches.map((b) => <span key={b.id} style={{ display: "block" }}>{b.short} · {b.daysLabel} {b.hours}</span>)}</span>
             <span className="go">ดูแผนที่ →</span>
           </Link>
         </div>
-        <p className="store-branch">สาขาหนองคาย — อัศวรรณ ช้อปปิ้ง 1 (โลตัส)</p>
+        <p className="store-branch">สาขา{nongkhai.province} — {nongkhai.place}</p>
         <div className="store-photos-wide">
           {storePhotosNongKhai.map((ph) => (
             <figure key={ph.src} className="store-photo" data-reveal="">
@@ -145,7 +154,7 @@ export default async function Home() {
               </div>
               <dl>
                 <dt>ที่อยู่</dt><dd>{b.addr}</dd>
-                <dt>เวลา</dt><dd>{b.hours}</dd>
+                <dt>เวลา</dt><dd>{b.daysLabel} {b.hours}</dd>
                 {c.phone && (<><dt>โทร</dt><dd><a href={`tel:${c.phoneIntl}`}>{c.phone}</a></dd></>)}
               </dl>
               <div className="row-btns">

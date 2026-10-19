@@ -69,7 +69,7 @@
 .fld > span { font-weight: 500; font-size: 13px; }
 .fld small { color: var(--muted); font-size: 12px; }
 .fld-row { display: grid; gap: 12px; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); }
-.adm input[type=text], .adm input[type=number], .adm input[type=password], .adm input[type=search], .adm select, .adm textarea {
+.adm input[type=text], .adm input[type=time], .adm input[type=number], .adm input[type=password], .adm input[type=search], .adm select, .adm textarea {
   width: 100%; padding: 10px 12px; border: 1px solid #d4d1cc; border-radius: 10px; background: #fff; font: inherit; color: inherit; font-size: 16px; }
 @media (min-width: 760px) { .adm input, .adm select, .adm textarea { font-size: 14px !important; } }
 .adm textarea { min-height: 110px; resize: vertical; line-height: 1.6; }
