@@ -105,3 +105,30 @@
 .ig-preview .ring img, .ig-preview .ring span { width: 100%; height: 100%; border-radius: 50%; border: 2px solid #fff; object-fit: cover; background: #efefef; display: grid; place-items: center; font-weight: 700; font-size: 12px; }
 .ig-preview .m { aspect-ratio: 1/1; background: #efefef; display: grid; place-items: center; color: var(--muted); }
 .ig-preview .m img { width: 100%; height: 100%; object-fit: cover; }
+
+/* ตรวจ SEO */
+.seo-score { display: inline-grid; place-items: center; min-width: 34px; height: 24px; padding: 0 8px; border-radius: 999px; font-size: 12px; font-weight: 700; vertical-align: middle; margin-left: 6px; }
+.tbl .seo-score { margin-left: 0; }
+.seo-score.good { background: #e7f3ec; color: var(--ok); }
+.seo-score.mid { background: #fdf3dc; color: #8a5a00; }
+.seo-score.low { background: #fbeaea; color: var(--red); }
+.seo-check ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; font-size: 13px; line-height: 1.5; }
+.seo-check li { display: grid; grid-template-columns: 20px 1fr; gap: 8px; align-items: start; }
+.seo-check li b { width: 20px; height: 20px; border-radius: 50%; display: grid; place-items: center; font-size: 11px; color: #fff; }
+.seo-check li.ok { color: var(--muted); }
+.seo-check li.ok b { background: var(--ok); }
+.seo-check li.warn b { background: #d08a00; }
+.seo-check li.bad b { background: var(--red); }
+.seo-check li.tip b { background: #7a7671; }
+
+/* FAQ / เนื้อหา */
+.faq-row { display: grid; gap: 8px; padding: 12px; border: 1px solid var(--line); border-radius: 10px; justify-items: start; }
+.faq-row .fld { width: 100%; }
+.md-tools { display: flex; flex-wrap: wrap; gap: 4px; }
+.md-tools button { min-height: 32px; padding: 0 10px; border: 1px solid var(--line); background: #fff; border-radius: 8px; font: inherit; font-size: 13px; cursor: pointer; }
+.md-tools button.on { background: var(--ink, #141313); color: #fff; }
+.md-preview { border: 1px solid var(--line); border-radius: 10px; padding: 16px; background: #fff; min-height: 200px; line-height: 1.8; }
+.md-preview h2 { font-size: 20px; margin: 20px 0 8px; } .md-preview h3 { font-size: 17px; margin: 16px 0 6px; }
+.md-preview img { max-width: 100%; border-radius: 8px; } .md-preview figure { margin: 12px 0; } .md-preview figcaption { font-size: 12px; color: var(--muted); }
+.mono-sub { font-size: 11px; color: var(--muted); font-family: "IBM Plex Mono", monospace; word-break: break-all; }
+.mono-cell { font-family: "IBM Plex Mono", monospace; font-size: 12px; word-break: break-all; }

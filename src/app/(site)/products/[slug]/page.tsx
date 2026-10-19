@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { notFound } from "next/navigation";
+import { redirectOrNotFound } from "@/lib/redirects";
 import ProductGallery from "@/components/ProductGallery";
 import ProductCard from "@/components/ProductCard";
 import AskButtons from "@/components/AskButtons";
@@ -30,8 +30,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 export default async function ProductPage({ params }: Props) {
-  const p = await getProductBySlug(decodeURIComponent((await params).slug));
-  if (!p) notFound();
+  const slug = decodeURIComponent((await params).slug);
+  const p = await getProductBySlug(slug);
+  if (!p) return redirectOrNotFound(`/products/${slug}`);
   const card = toCard(p);
   const [relatedRows, c] = await Promise.all([getRelatedProducts(p), getContact()]);
   const related = relatedRows.map(toCard);

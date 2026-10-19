@@ -16,6 +16,8 @@ export const categories = sqliteTable("categories", {
   name: text("name").notNull(),
   slug: text("slug").notNull().unique(),
   description: text("description"),
+  content: text("content"), // บทความแนะนำใต้รายการสินค้า (markdown)
+  faq: text("faq"), // JSON [{q,a}]
   sortOrder: integer("sort_order").notNull().default(0),
   ...seo,
   ...timestamps,
@@ -27,6 +29,8 @@ export const brands = sqliteTable("brands", {
   slug: text("slug").notNull().unique(),
   logo: text("logo"),
   description: text("description"),
+  content: text("content"),
+  faq: text("faq"),
   sortOrder: integer("sort_order").notNull().default(0),
   ...seo,
   ...timestamps,
@@ -87,6 +91,30 @@ export const reviews = sqliteTable("reviews", {
   ...timestamps,
 });
 
+// บทความ — จัดการได้ที่ /admin/articles
+export const articles = sqliteTable("articles", {
+  id: integer("id").primaryKey({ autoIncrement: true }),
+  title: text("title").notNull(),
+  slug: text("slug").notNull().unique(),
+  excerpt: text("excerpt"),
+  content: text("content").notNull().default(""), // markdown
+  cover: text("cover"),
+  coverAlt: text("cover_alt"),
+  faq: text("faq"),
+  published: integer("published", { mode: "boolean" }).notNull().default(false),
+  publishedAt: integer("published_at", { mode: "timestamp" }),
+  ...seo,
+  ...timestamps,
+});
+
+// URL เก่า → URL ใหม่ (301) สร้างอัตโนมัติเมื่อเปลี่ยน slug หรือลบ
+export const redirects = sqliteTable("redirects", {
+  fromPath: text("from_path").primaryKey(),
+  toPath: text("to_path").notNull(),
+  hits: integer("hits").notNull().default(0),
+  createdAt: timestamps.createdAt,
+});
+
 export const categoriesRelations = relations(categories, ({ many }) => ({ products: many(products) }));
 export const brandsRelations = relations(brands, ({ many }) => ({ products: many(products) }));
 export const productsRelations = relations(products, ({ one, many }) => ({
@@ -103,3 +131,5 @@ export type Brand = typeof brands.$inferSelect;
 export type Product = typeof products.$inferSelect;
 export type ProductImage = typeof productImages.$inferSelect;
 export type Review = typeof reviews.$inferSelect;
+export type Article = typeof articles.$inferSelect;
+export type Redirect = typeof redirects.$inferSelect;

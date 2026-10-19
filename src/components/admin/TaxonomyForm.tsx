@@ -4,6 +4,10 @@ import { useActionState, useState } from "react";
 import { saveBrand, saveCategory } from "@/app/admin/actions";
 import SubmitButton from "./SubmitButton";
 import SeoFields from "./SeoFields";
+import SeoCheck from "./SeoCheck";
+import FaqEditor from "./FaqEditor";
+import MarkdownField from "./MarkdownField";
+import { parseFaq } from "@/lib/faq";
 import { compressInput } from "./compressImages";
 import type { Brand, Category } from "@/db/schema";
 
@@ -25,11 +29,15 @@ export default function TaxonomyForm({ kind, item, host }: { kind: Kind; item?: 
           <div className="panel card">
             <h2>ข้อมูล{L.one}</h2>
             <label className="fld"><span>ชื่อ{L.one} *</span><input type="text" name="name" required value={name} onChange={(e) => setName(e.target.value)} placeholder={L.ph} /></label>
-            <label className="fld"><span>คำอธิบาย</span><textarea name="description" defaultValue={item?.description ?? ""} placeholder={`แสดงบนหน้า${L.one} ช่วยเรื่อง SEO`} /></label>
+            <label className="fld"><span>คำแนะนำสั้น (ใต้ชื่อหน้า)</span><textarea name="description" defaultValue={item?.description ?? ""} placeholder={`1–2 ประโยค เช่น “${kind === "brands" ? "กรอบแว่นแบรนด์ … ของแท้ มีให้ลองทั้งสาขาอุดรและหนองคาย" : "รวมกรอบแว่น … เหมาะกับใคร มีกี่ทรง"}”`} style={{ minHeight: 80 }} /></label>
+            <MarkdownField name="content" label="เนื้อหาแนะนำ (แสดงใต้รายการสินค้า)" defaultValue={item?.content} minHeight={220}
+              placeholder={kind === "brands" ? "## ทำไมต้อง …\nเล่าจุดเด่นของแบรนด์ วัสดุ สไตล์ รุ่นยอดนิยม\n\n## เลือกรุ่นไหนดี\n- หน้ากลม …\n- หน้าเหลี่ยม …" : "## … เหมาะกับใคร\nอธิบายหมวดนี้ ข้อดี วิธีเลือก\n\n## วิธีเลือก…\n- …"} />
           </div>
+          <FaqEditor initial={parseFaq(item?.faq)} />
           <SeoFields path={`${host}/${L.url}/${slug || "…"}`} defTitle={name || `ชื่อ${L.one}`} defDesc={`${name} แบรนด์แท้ที่ J.O. Vision Care ร้านแว่นอุดรและหนองคาย`} metaTitle={item?.metaTitle} metaDescription={item?.metaDescription} />
         </div>
         <div className="form">
+          <SeoCheck kind="taxonomy" />
           {kind === "brands" && (
             <div className="panel card">
               <h2>โลโก้แบรนด์</h2>

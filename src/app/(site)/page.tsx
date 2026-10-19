@@ -4,7 +4,8 @@ import HeroLens from "@/components/HeroLens";
 import LensLab from "@/components/LensLab";
 import Collection from "@/components/Collection";
 import JsonLd from "@/components/JsonLd";
-import { getBrands, getCategories, getPublishedProducts, getPublishedReviews, toCard } from "@/lib/queries";
+import { getBrands, getCategories, getPublishedArticles, getPublishedProducts, getPublishedReviews, toCard } from "@/lib/queries";
+import ArticleCard from "@/components/ArticleCard";
 import IgPost from "@/components/IgPost";
 import { site, SITE_URL, storePhotos, storePhotosNongKhai } from "@/lib/site";
 import { getBranches, getContact } from "@/lib/settings";
@@ -22,7 +23,7 @@ export const metadata: Metadata = {
 
 export default async function Home() {
   const [products, categories, brands, reviews, c] = await Promise.all([getPublishedProducts({ featuredOnly: true, limit: 24 }), getCategories(), getBrands(), getPublishedReviews(), getContact()]);
-  const branches = await getBranches();
+  const [branches, articles] = await Promise.all([getBranches(), getPublishedArticles(3)]);
   const [udon, nongkhai] = branches;
   const cards = products.map(toCard);
 
@@ -146,6 +147,17 @@ export default async function Home() {
           ))}
         </div>
       </section>
+
+      {articles.length > 0 && (
+        <section id="articles" className="section" aria-labelledby="articles-title">
+          <div className="sec-head" data-reveal="">
+            <p className="eyebrow">JOURNAL</p>
+            <h2 id="articles-title" className="h2">เรื่องแว่นที่ควรรู้</h2>
+          </div>
+          <div className="grid-articles">{articles.map((a) => <ArticleCard key={a.id} a={a} />)}</div>
+          <Link href="/articles" className="more-link">ดูบทความทั้งหมด →</Link>
+        </section>
+      )}
     </>
   );
 }

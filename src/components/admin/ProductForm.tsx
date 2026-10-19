@@ -4,6 +4,7 @@ import { useActionState, useState } from "react";
 import { saveProduct } from "@/app/admin/actions";
 import SubmitButton from "./SubmitButton";
 import SeoFields from "./SeoFields";
+import SeoCheck from "./SeoCheck";
 import { compressInput, MAX_TOTAL_BYTES } from "./compressImages";
 import type { Brand, Category, Product, ProductImage } from "@/db/schema";
 
@@ -41,7 +42,7 @@ export default function ProductForm({ product: p, categories, brands, host }: Pr
               <label className="fld"><span>ราคา (บาท)</span><input type="number" name="price" min={0} defaultValue={p?.price ?? ""} placeholder="ไม่ระบุ = สอบถามแอดมิน" /></label>
               <label className="fld"><span>ป้าย</span><input type="text" name="tag" defaultValue={p?.tag ?? ""} placeholder="NEW ARRIVAL / BEST SELLER" /></label>
             </div>
-            <label className="fld"><span>รายละเอียด</span><textarea name="description" defaultValue={p?.description ?? ""} placeholder="วัสดุ ขนาด สีที่มี จุดเด่น… (เว้นว่างจะใช้ข้อความมาตรฐาน)" /></label>
+            <label className="fld"><span>รายละเอียด</span><textarea name="description" defaultValue={p?.description ?? ""} placeholder="วัสดุ ขนาด สีที่มี จุดเด่น… (เว้นว่างจะใช้ข้อความมาตรฐาน)" /><small>เขียนให้ไม่ซ้ำกับรุ่นอื่น เช่น วัสดุ น้ำหนัก ขนาดเลนส์ สีที่มี เหมาะกับรูปหน้าแบบไหน</small></label>
           </div>
 
           <div className="panel card">
@@ -86,6 +87,7 @@ export default function ProductForm({ product: p, categories, brands, host }: Pr
         </div>
 
         <div className="form">
+          <SeoCheck kind="product" />
           <div className="panel card">
             <h2>การแสดงผล</h2>
             <label className="check"><input type="checkbox" name="published" defaultChecked={p?.published ?? true} /> เผยแพร่บนเว็บไซต์</label>

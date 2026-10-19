@@ -66,3 +66,8 @@ export type ProductCard = ReturnType<typeof toCard>;
 
 export const getPublishedReviews = () =>
   db.query.reviews.findMany({ where: eq(t.reviews.published, true), orderBy: [asc(t.reviews.sortOrder), desc(t.reviews.id)], limit: 12 });
+
+/* ---------- บทความ ---------- */
+export const getPublishedArticles = (limit?: number) =>
+  db.query.articles.findMany({ where: eq(t.articles.published, true), orderBy: [desc(t.articles.publishedAt), desc(t.articles.id)], limit });
+export const getArticleBySlug = (slug: string) => db.query.articles.findFirst({ where: and(eq(t.articles.slug, slug), eq(t.articles.published, true)) });

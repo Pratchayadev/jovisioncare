@@ -3,10 +3,12 @@ import ProductCard from "./ProductCard";
 import JsonLd from "./JsonLd";
 import { absoluteUrl, SITE_URL } from "@/lib/site";
 import type { ProductCard as P } from "@/lib/queries";
+import { faqNode, type Faq } from "@/lib/faq";
+import { Prose, FaqList } from "./Prose";
 
 type Chip = { href: string; label: string; on?: boolean };
 
-export default function ListingPage({ title, eyebrow, intro, products, chips, path }: { title: string; eyebrow: string; intro?: string | null; products: P[]; chips?: Chip[]; path: string }) {
+export default function ListingPage({ title, eyebrow, intro, products, chips, path, content, faq = [] }: { title: string; eyebrow: string; intro?: string | null; products: P[]; chips?: Chip[]; path: string; content?: string | null; faq?: Faq[] }) {
   const crumbs = [{ name: "หน้าแรก", url: "/" }, { name: title, url: path }];
   return (
     <>
@@ -16,6 +18,7 @@ export default function ListingPage({ title, eyebrow, intro, products, chips, pa
           "@graph": [
             { "@type": "BreadcrumbList", itemListElement: crumbs.map((c, i) => ({ "@type": "ListItem", position: i + 1, name: c.name, item: absoluteUrl(c.url) })) },
             { "@type": "CollectionPage", name: title, url: SITE_URL + path, mainEntity: { "@type": "ItemList", itemListElement: products.map((p, i) => ({ "@type": "ListItem", position: i + 1, url: absoluteUrl(`/products/${p.slug}`), name: `${p.brand} ${p.name}` })) } },
+            ...(faq.length ? [faqNode(faq)] : []),
           ],
         }}
       />
@@ -33,6 +36,8 @@ export default function ListingPage({ title, eyebrow, intro, products, chips, pa
         )}
         <div className="grid-products">{products.map((p, i) => <ProductCard key={p.id} p={p} priority={i < 4} />)}</div>
         {!products.length && <p className="empty">ยังไม่มีสินค้าในหน้านี้ — ทักแอดมินเพื่อสอบถามรุ่นที่ต้องการได้เลย</p>}
+        {content && <Prose md={content} className="listing-prose" />}
+        {faq.length > 0 && <FaqList items={faq} />}
       </div>
     </>
   );

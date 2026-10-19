@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
-import { notFound } from "next/navigation";
+import { redirectOrNotFound } from "@/lib/redirects";
+import { parseFaq } from "@/lib/faq";
 import ListingPage from "@/components/ListingPage";
 import { getCategories, getCategoryBySlug, getPublishedProducts, toCard } from "@/lib/queries";
 
@@ -18,7 +19,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 export default async function CategoryPage({ params }: Props) {
   const slug = decodeURIComponent((await params).slug);
   const [c, categories] = await Promise.all([getCategoryBySlug(slug), getCategories()]);
-  if (!c) notFound();
+  if (!c) return redirectOrNotFound(`/category/${slug}`);
   const products = await getPublishedProducts({ categoryId: c.id });
   return (
     <ListingPage
@@ -27,6 +28,8 @@ export default async function CategoryPage({ params }: Props) {
       intro={c.description}
       products={products.map(toCard)}
       path={`/category/${c.slug}`}
+      content={c.content}
+      faq={parseFaq(c.faq)}
       chips={[{ href: "/products", label: "ทั้งหมด" }, ...categories.map((x) => ({ href: `/category/${x.slug}`, label: x.name, on: x.id === c.id }))]}
     />
   );

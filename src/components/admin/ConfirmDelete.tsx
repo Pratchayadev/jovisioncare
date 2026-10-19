@@ -19,7 +19,7 @@ function Btn({ label }: { label: string }) {
   );
 }
 
-export default function ConfirmDelete({ action, id, label = "ลบ" }: { action: (f: FormData) => Promise<void>; id: number; label?: string }) {
+export default function ConfirmDelete({ action, id, label = "ลบ" }: { action: (f: FormData) => Promise<void>; id: number | string; label?: string }) {
   return (
     <form action={action}>
       <input type="hidden" name="id" value={id} />

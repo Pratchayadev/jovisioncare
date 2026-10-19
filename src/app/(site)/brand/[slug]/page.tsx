@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
-import { notFound } from "next/navigation";
+import { redirectOrNotFound } from "@/lib/redirects";
+import { parseFaq } from "@/lib/faq";
 import ListingPage from "@/components/ListingPage";
 import { getBrandBySlug, getPublishedProducts, toCard } from "@/lib/queries";
 
@@ -16,8 +17,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 export default async function BrandPage({ params }: Props) {
-  const b = await getBrandBySlug(decodeURIComponent((await params).slug));
-  if (!b) notFound();
+  const slug = decodeURIComponent((await params).slug);
+  const b = await getBrandBySlug(slug);
+  if (!b) return redirectOrNotFound(`/brand/${slug}`);
   const products = await getPublishedProducts({ brandId: b.id });
-  return <ListingPage title={`แว่น ${b.name}`} eyebrow="BRAND" intro={b.description || `กรอบแว่น ${b.name} ของแท้ ที่ร้านแว่นอุดรและหนองคาย`} products={products.map(toCard)} path={`/brand/${b.slug}`} />;
+  return <ListingPage title={`แว่น ${b.name}`} eyebrow="BRAND" intro={b.description || `กรอบแว่น ${b.name} ของแท้ ที่ร้านแว่นอุดรและหนองคาย`} products={products.map(toCard)} path={`/brand/${b.slug}`} content={b.content} faq={parseFaq(b.faq)} />;
 }

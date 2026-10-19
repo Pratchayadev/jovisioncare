@@ -1,3 +1,4 @@
+import { checkProduct, score } from "@/lib/seo-check";
 import Link from "next/link";
 import { and, asc, desc, eq, like, or, type SQL } from "drizzle-orm";
 import { db, t } from "@/lib/db";
@@ -16,7 +17,7 @@ export default async function ProductsAdmin({ searchParams }: { searchParams: SP
   const [rows, cats, brands] = await Promise.all([
     db.query.products.findMany({
       where: conds.length ? and(...conds) : undefined,
-      with: { brand: true, category: true, images: { orderBy: [asc(t.productImages.sortOrder)], limit: 1 } },
+      with: { brand: true, category: true, images: { orderBy: [asc(t.productImages.sortOrder)] } },
       orderBy: [asc(t.products.sortOrder), desc(t.products.id)],
     }),
     db.query.categories.findMany({ orderBy: [asc(t.categories.sortOrder)] }),
@@ -38,7 +39,7 @@ export default async function ProductsAdmin({ searchParams }: { searchParams: SP
       </form>
       <div className="card">
         <table className="tbl">
-          <thead><tr><th></th><th>สินค้า</th><th>แบรนด์</th><th>หมวดหมู่</th><th>ราคา</th><th>สถานะ</th><th></th></tr></thead>
+          <thead><tr><th></th><th>สินค้า</th><th>แบรนด์</th><th>หมวดหมู่</th><th>ราคา</th><th title="คะแนน SEO">SEO</th><th>สถานะ</th><th></th></tr></thead>
           <tbody>
             {rows.map((p) => (
               <tr key={p.id}>
@@ -48,6 +49,7 @@ export default async function ProductsAdmin({ searchParams }: { searchParams: SP
                 <td>{p.brand?.name ?? "—"}</td>
                 <td className="c-hide">{p.category?.name ?? "—"}</td>
                 <td className="c-hide">{p.price ? p.price.toLocaleString("th-TH") : "—"}</td>
+                <td>{(() => { const sc = score(checkProduct({ name: p.name, description: p.description ?? "", price: p.price ? "1" : "", categoryId: p.categoryId ? "1" : "", brandId: p.brandId ? "1" : "", images: p.images.length, missingAlt: p.images.filter((i) => !i.alt?.trim()).length, metaTitle: p.metaTitle ?? "", metaDescription: p.metaDescription ?? "" })); return <Link href={`/admin/products/${p.id}`} className={"seo-score " + (sc >= 80 ? "good" : sc >= 50 ? "mid" : "low")} title="กดเพื่อดูสิ่งที่ควรปรับ">{sc}</Link>; })()}</td>
                 <td>
                   <form action={togglePublished}><input type="hidden" name="id" value={p.id} />
                     <button className={"badge " + (p.published ? "on" : "off")} title="กดเพื่อสลับ">{p.published ? "เผยแพร่" : "ซ่อน"}</button>

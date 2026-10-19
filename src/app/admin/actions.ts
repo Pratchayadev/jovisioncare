@@ -10,6 +10,8 @@ import { slugify } from "@/lib/slug";
 import { deleteImage, saveImage } from "@/lib/storage";
 import { BRANCH_IDS, DAYS, parseLatLng } from "@/lib/branches";
 import { branchKey } from "@/lib/settings";
+import { clearRedirect, recordMove } from "@/lib/redirects";
+import { parseFaq } from "@/lib/faq";
 
 export type FormState = { error?: string } | undefined;
 
@@ -18,6 +20,7 @@ const opt = (f: FormData, k: string) => str(f, k) || null;
 const int = (f: FormData, k: string) => { const v = str(f, k).replace(/[,\s]/g, ""); return v === "" ? null : Number.parseInt(v, 10) || 0; };
 const files = (f: FormData, k: string) => f.getAll(k).filter((x): x is File => x instanceof File && x.size > 0);
 const refresh = () => revalidatePath("/", "layout");
+const faqJson = (f: FormData) => { const v = parseFaq(str(f, "faq")); return v.length ? JSON.stringify(v.map(({ q, a }) => ({ q: q.trim(), a: a.trim() }))) : null; };
 
 function friendly(e: unknown) {
   const msg = e instanceof Error ? e.message : String(e);
@@ -76,6 +79,7 @@ export async function saveProduct(_: FormState, f: FormData): Promise<FormState>
 
   let productId = id;
   try {
+    const old = id ? await db.query.products.findFirst({ where: eq(t.products.id, id), columns: { slug: true } }) : null;
     if (id) await db.update(t.products).set(values).where(eq(t.products.id, id));
     else productId = (await db.insert(t.products).values(values).returning({ id: t.products.id }))[0].id;
 
@@ -98,6 +102,8 @@ export async function saveProduct(_: FormState, f: FormData): Promise<FormState>
       const url = await saveImage(file, "products");
       await db.insert(t.productImages).values({ url, productId: productId!, sortOrder: start + k, alt: `${brand?.name ?? ""} ${name}`.trim() });
     }
+    if (old && old.slug !== slug) await recordMove(`/products/${old.slug}`, `/products/${slug}`);
+    else await clearRedirect(`/products/${slug}`);
   } catch (e) {
     return { error: friendly(e) };
   }
@@ -110,8 +116,11 @@ export async function deleteProduct(f: FormData) {
   const id = int(f, "id");
   if (!id) return;
   const imgs = await db.query.productImages.findMany({ where: eq(t.productImages.productId, id) });
+  const p = await db.query.products.findFirst({ where: eq(t.products.id, id), with: { category: true } });
   await db.delete(t.productImages).where(eq(t.productImages.productId, id));
   await db.delete(t.products).where(eq(t.products.id, id));
+  // ลิงก์สินค้าที่ลบแล้ว ส่งไปหน้าหมวดแทน 404
+  if (p) await recordMove(`/products/${p.slug}`, p.category ? `/category/${p.category.slug}` : "/products");
   await Promise.all(imgs.map((i) => deleteImage(i.url)));
   refresh();
   redirect("/admin/products?deleted=1");
@@ -140,11 +149,15 @@ async function saveTaxonomy(kind: Kind, f: FormData): Promise<FormState> {
   const values: Record<string, unknown> = {
     name, slug,
     description: opt(f, "description"),
+    content: opt(f, "content"),
+    faq: faqJson(f),
     sortOrder: int(f, "sortOrder") ?? 0,
     metaTitle: opt(f, "metaTitle"),
     metaDescription: opt(f, "metaDescription"),
   };
+  const base = kind === "brands" ? "/brand/" : "/category/";
   try {
+    const old = id ? (await db.select({ slug: table.slug }).from(table).where(eq(table.id, id)))[0] : null;
     const dupe = await db.select({ id: table.id }).from(table).where(id ? and(eq(table.slug, slug), ne(table.id, id)) : eq(table.slug, slug));
     if (dupe.length) return { error: "Slug นี้ถูกใช้แล้ว กรุณาเปลี่ยน" };
     if (kind === "brands") {
@@ -155,6 +168,8 @@ async function saveTaxonomy(kind: Kind, f: FormData): Promise<FormState> {
     }
     if (id) await db.update(table).set(values).where(eq(table.id, id));
     else await db.insert(table).values(values as typeof table.$inferInsert);
+    if (old && old.slug !== slug) await recordMove(base + old.slug, base + slug);
+    else await clearRedirect(base + slug);
   } catch (e) {
     return { error: friendly(e) };
   }
@@ -174,6 +189,8 @@ async function deleteTaxonomy(kind: Kind, f: FormData) {
     if (b?.logo) await deleteImage(b.logo);
   }
   // สินค้าในหมวด/แบรนด์นี้จะไม่ถูกลบ แค่ไม่มีหมวด/แบรนด์
+  const row = (await db.select({ slug: t[kind].slug }).from(t[kind]).where(eq(t[kind].id, id)))[0];
+  if (row) await recordMove((kind === "brands" ? "/brand/" : "/category/") + row.slug, "/products");
   if (kind === "categories") await db.update(t.products).set({ categoryId: null }).where(eq(t.products.categoryId, id));
   else await db.update(t.products).set({ brandId: null }).where(eq(t.products.brandId, id));
   await db.delete(t[kind]).where(eq(t[kind].id, id));
@@ -320,4 +337,109 @@ export async function saveBranch(_: FormState, f: FormData): Promise<FormState &
   await db.insert(t.settings).values({ key: branchKey(id), value }).onConflictDoUpdate({ target: t.settings.key, set: { value, updatedAt: new Date() } });
   refresh();
   return { ok: true };
+}
+
+/* ---------- รูปในเนื้อหา (บทความ / หมวด) ---------- */
+export async function uploadContentImage(f: FormData): Promise<{ url?: string; error?: string }> {
+  await requireAdmin();
+  const file = files(f, "image")[0];
+  if (!file) return { error: "ไม่พบไฟล์รูป" };
+  try {
+    return { url: await saveImage(file, "content") };
+  } catch (e) {
+    return { error: `อัปโหลดไม่สำเร็จ — ${friendly(e)}` };
+  }
+}
+
+/* ---------- Articles (บทความ) ---------- */
+export async function saveArticle(_: FormState, f: FormData): Promise<FormState> {
+  await requireAdmin();
+  const id = int(f, "id");
+  const title = str(f, "title");
+  if (!title) return { error: "กรุณากรอกชื่อบทความ" };
+  const slug = slugify(str(f, "slug") || title);
+  if (!slug) return { error: "Slug ไม่ถูกต้อง" };
+  const current = id ? await db.query.articles.findFirst({ where: eq(t.articles.id, id) }) : null;
+  if (id && !current) return { error: "ไม่พบบทความนี้ (อาจถูกลบไปแล้ว)" };
+  const dupe = await db.select({ id: t.articles.id }).from(t.articles).where(id ? and(eq(t.articles.slug, slug), ne(t.articles.id, id)) : eq(t.articles.slug, slug));
+  if (dupe.length) return { error: "Slug นี้ถูกใช้แล้ว กรุณาเปลี่ยน" };
+
+  const published = f.get("published") === "on";
+  const values: Partial<typeof t.articles.$inferInsert> = {
+    title, slug,
+    excerpt: opt(f, "excerpt"),
+    content: str(f, "content"),
+    coverAlt: opt(f, "coverAlt"),
+    faq: faqJson(f),
+    published,
+    publishedAt: published ? (current?.publishedAt ?? new Date()) : (current?.publishedAt ?? null),
+    metaTitle: opt(f, "metaTitle"),
+    metaDescription: opt(f, "metaDescription"),
+  };
+  const cover = files(f, "cover")[0];
+  let uploaded: string | null = null;
+  let savedId = id;
+  try {
+    if (cover) uploaded = values.cover = await saveImage(cover, "articles");
+    else if (f.get("removeCover") === "on") values.cover = null;
+    if (id) await db.update(t.articles).set(values).where(eq(t.articles.id, id));
+    else savedId = (await db.insert(t.articles).values(values as typeof t.articles.$inferInsert).returning({ id: t.articles.id }))[0].id;
+    if (current && current.slug !== slug) await recordMove(`/articles/${current.slug}`, `/articles/${slug}`);
+    else await clearRedirect(`/articles/${slug}`);
+  } catch (e) {
+    if (uploaded) await deleteImage(uploaded);
+    return { error: friendly(e) };
+  }
+  if ((cover || f.get("removeCover") === "on") && current?.cover) await deleteImage(current.cover);
+  refresh();
+  redirect(`/admin/articles?saved=${savedId}`);
+}
+
+export async function deleteArticle(f: FormData) {
+  await requireAdmin();
+  const id = int(f, "id");
+  if (!id) return;
+  const a = await db.query.articles.findFirst({ where: eq(t.articles.id, id) });
+  await db.delete(t.articles).where(eq(t.articles.id, id));
+  if (a) {
+    if (a.cover) await deleteImage(a.cover);
+    if (a.published) await recordMove(`/articles/${a.slug}`, "/articles");
+  }
+  refresh();
+  redirect("/admin/articles?deleted=1");
+}
+
+export async function toggleArticle(f: FormData) {
+  await requireAdmin();
+  const id = int(f, "id");
+  if (!id) return;
+  const a = await db.query.articles.findFirst({ where: eq(t.articles.id, id) });
+  if (a) await db.update(t.articles).set({ published: !a.published, publishedAt: a.publishedAt ?? new Date() }).where(eq(t.articles.id, id));
+  refresh();
+}
+
+/* ---------- Redirects ---------- */
+const normPath = (v: string) => {
+  let p = v.trim();
+  try { if (/^https?:\/\//i.test(p)) { const u = new URL(p); p = u.pathname + u.search; } } catch { /* ใช้ค่าเดิม */ }
+  p = decodeURIComponent(p).replace(/\/+$/, "");
+  return p.startsWith("/") ? p : "/" + p;
+};
+
+export async function saveRedirect(_: FormState, f: FormData): Promise<FormState & { ok?: boolean }> {
+  await requireAdmin();
+  const from = normPath(str(f, "from")), to = normPath(str(f, "to"));
+  if (from === "/" || from.length < 2) return { error: "URL เก่าไม่ถูกต้อง" };
+  if (from.startsWith("/admin")) return { error: "ไม่สามารถ redirect หน้าหลังบ้าน" };
+  if (from === to) return { error: "URL เก่าและใหม่ต้องไม่เหมือนกัน" };
+  await recordMove(from, to);
+  refresh();
+  return { ok: true };
+}
+
+export async function deleteRedirect(f: FormData) {
+  await requireAdmin();
+  const from = str(f, "id");
+  if (from) await clearRedirect(from);
+  refresh();
 }
