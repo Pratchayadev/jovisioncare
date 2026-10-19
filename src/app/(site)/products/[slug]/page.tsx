@@ -7,6 +7,7 @@ import AskButtons from "@/components/AskButtons";
 import JsonLd from "@/components/JsonLd";
 import { getProductBySlug, getRelatedProducts, toCard } from "@/lib/queries";
 import { absoluteUrl, defaultProductDesc, site } from "@/lib/site";
+import { getContact } from "@/lib/settings";
 
 export const revalidate = 3600;
 export const generateStaticParams = async () => [] as { slug: string }[];
@@ -31,7 +32,8 @@ export default async function ProductPage({ params }: Props) {
   const p = await getProductBySlug(decodeURIComponent((await params).slug));
   if (!p) notFound();
   const card = toCard(p);
-  const related = (await getRelatedProducts(p)).map(toCard);
+  const [relatedRows, c] = await Promise.all([getRelatedProducts(p), getContact()]);
+  const related = relatedRows.map(toCard);
   const url = absoluteUrl(`/products/${p.slug}`);
   const crumbs = [
     { name: "หน้าแรก", url: "/" },
@@ -82,7 +84,7 @@ export default async function ProductPage({ params }: Props) {
               {p.category && (<><dt>หมวดหมู่</dt><dd><Link href={`/category/${p.category.slug}`}>{p.category.name}</Link></dd></>)}
               <dt>สาขา</dt><dd>อุดรธานี · หนองคาย</dd>
             </dl>
-            <AskButtons p={card} />
+            <AskButtons p={card} c={c} />
           </div>
         </article>
         {related.length > 0 && (

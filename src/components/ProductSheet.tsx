@@ -5,8 +5,9 @@ import ProductGallery from "./ProductGallery";
 import AskButtons from "./AskButtons";
 import { defaultProductDesc } from "@/lib/site";
 import type { ProductCard } from "@/lib/queries";
+import type { Contact } from "@/lib/contact";
 
-export default function ProductSheet({ p, onClose }: { p: ProductCard; onClose: () => void }) {
+export default function ProductSheet({ p, c, onClose }: { p: ProductCard; c: Contact; onClose: () => void }) {
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => e.key === "Escape" && onClose();
     const prev = document.body.style.overflow;
@@ -26,7 +27,7 @@ export default function ProductSheet({ p, onClose }: { p: ProductCard; onClose: 
         </div>
         <ProductGallery images={p.images} />
         <p className="sheet-desc">{p.description || defaultProductDesc}</p>
-        <AskButtons p={p} />
+        <AskButtons p={p} c={c} />
         <Link href={`/products/${p.slug}`} className="sheet-more">ดูรายละเอียดสินค้า →</Link>
       </div>
     </div>

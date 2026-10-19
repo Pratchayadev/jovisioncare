@@ -235,3 +235,43 @@ export async function toggleReview(f: FormData) {
   if (r) await db.update(t.reviews).set({ published: !r.published }).where(eq(t.reviews.id, id));
   refresh();
 }
+
+/* ---------- Settings (ช่องทางติดต่อ) ---------- */
+export async function saveSettings(_: FormState, f: FormData): Promise<FormState & { ok?: boolean }> {
+  await requireAdmin();
+  const handle = (v: string, host: RegExp) =>
+    v.trim().replace(host, "").replace(/[/?#].*$/, "").replace(/^@+/, "");
+  const ig = handle(str(f, "igHandle"), /^https?:\/\/(www\.)?instagram\.com\//i);
+  const tt = handle(str(f, "tiktokHandle"), /^https?:\/\/(www\.)?tiktok\.com\/@?/i);
+  const lineId = str(f, "lineId").replace(/\s/g, "");
+  const lineUrl = str(f, "lineUrl");
+  const fbUdon = str(f, "fbUdon");
+  const fbNongkhai = str(f, "fbNongkhai");
+  const phone = str(f, "phone");
+
+  const okHandle = /^[A-Za-z0-9._]{1,30}$/;
+  if (!okHandle.test(ig)) return { error: "ชื่อ Instagram ไม่ถูกต้อง (ใช้ได้เฉพาะ a-z 0-9 . _)" };
+  if (!okHandle.test(tt)) return { error: "ชื่อ TikTok ไม่ถูกต้อง (ใช้ได้เฉพาะ a-z 0-9 . _)" };
+  for (const [label, u] of [["Facebook สาขาอุดรธานี", fbUdon], ["Facebook สาขาหนองคาย", fbNongkhai]] as const)
+    if (!/^https:\/\/(www\.|m\.)?(facebook|fb)\.com\/.+/i.test(u)) return { error: `ลิงก์${label} ต้องขึ้นต้นด้วย https://www.facebook.com/` };
+  if (lineUrl && !/^https:\/\/(lin\.ee|line\.me|page\.line\.me)\/.+/i.test(lineUrl)) return { error: "ลิงก์ LINE ต้องเป็น https://lin.ee/... หรือ https://line.me/..." };
+  if (lineId && !/^@?[A-Za-z0-9._-]{3,30}$/.test(lineId)) return { error: "LINE ID ไม่ถูกต้อง เช่น @jovisioncare" };
+  const lineEnabled = f.get("lineEnabled") === "on";
+  if (lineEnabled && !lineId && !lineUrl) return { error: "เปิดปุ่ม LINE ต้องใส่ LINE ID หรือลิงก์ LINE อย่างน้อย 1 อย่าง" };
+  if (phone && !/^[0-9+\-\s()]{9,20}$/.test(phone)) return { error: "เบอร์โทรไม่ถูกต้อง เช่น 098-424-5224" };
+
+  const values: Record<string, string> = {
+    line_enabled: lineEnabled ? "1" : "0",
+    line_id: lineId ? "@" + lineId.replace(/^@+/, "") : "",
+    line_url: lineUrl,
+    fb_udon: fbUdon,
+    fb_nongkhai: fbNongkhai,
+    ig_handle: ig,
+    tiktok_handle: tt,
+    phone,
+  };
+  for (const [key, value] of Object.entries(values))
+    await db.insert(t.settings).values({ key, value }).onConflictDoUpdate({ target: t.settings.key, set: { value, updatedAt: new Date() } });
+  refresh();
+  return { ok: true };
+}

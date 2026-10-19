@@ -1,4 +1,4 @@
-// ข้อมูลร้านที่ไม่ค่อยเปลี่ยน — แก้ที่ไฟล์นี้ได้เลย
+// ข้อมูลร้านที่ไม่ค่อยเปลี่ยน — ลิงก์โซเชียลและเบอร์โทรแก้ได้ที่หลังบ้าน /admin/settings
 // บน Vercel ถ้ายังไม่ตั้ง SITE_URL จะใช้โดเมน production ของโปรเจกต์ให้อัตโนมัติ
 const vercelHost = process.env.VERCEL_PROJECT_PRODUCTION_URL || process.env.VERCEL_URL;
 export const SITE_URL = (process.env.SITE_URL || (vercelHost ? `https://${vercelHost}` : "http://localhost:3000")).replace(/\/$/, "");
@@ -14,26 +14,7 @@ export const site = {
   promo: { label: "กรอบแว่นพร้อมเลนส์กรองแสงสีฟ้า ราคาเดียว", price: "1,700 บาท" },
 };
 
-export const links = {
-  // LINE OA: ใส่ลิงก์เมื่อพร้อม (เช่น "https://line.me/R/ti/p/@jovisioncare") — ถ้าเว้นว่าง ปุ่ม LINE ทุกจุดจะถูกซ่อน
-  line: "",
-  lineOaId: "@jovisioncare",
-  fbUdon: "https://www.facebook.com/profile.php?id=61594085984685",
-  fbNongkhai: "https://www.facebook.com/profile.php?id=100063572375151",
-  igInbox: "https://ig.me/m/jovisioncare",
-  ig: "https://www.instagram.com/jovisioncare",
-  tiktok: "https://www.tiktok.com/@j.o.visioncare",
-  tiktokHandle: "@j.o.visioncare",
-};
-
-/** ลิงก์เปิดแชท LINE OA พร้อมข้อความ — คืน null ถ้ายังไม่ได้ตั้งลิงก์ LINE */
-export const lineMessage = (text: string) =>
-  links.line ? `https://line.me/R/oaMessage/${links.lineOaId}/?` + encodeURIComponent(text) : null;
-
 // เวลาเปิด–ปิด (ใช้ทั้งบนหน้าเว็บและข้อมูลสำหรับ Google)
-// เบอร์โทร (ใช้ร่วมกันทั้ง 2 สาขา)
-export const PHONE = "098-424-5224";
-export const PHONE_INTL = "+66984245224";
 const OPEN = "10:00";
 const CLOSE = "20:00";
 const navUrl = (lat: number, lng: number) => `https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}`;
@@ -51,9 +32,8 @@ export const branches = [
     opens: OPEN,
     closes: CLOSE,
     hours: `${OPEN}–${CLOSE} น.`,
-    tel: PHONE,
     map: navUrl(17.41869, 102.785187),
-    fb: links.fbUdon,
+    fbKey: "fbUdon" as const,
   },
   {
     en: "NONG KHAI",
@@ -67,9 +47,8 @@ export const branches = [
     opens: OPEN,
     closes: CLOSE,
     hours: `${OPEN}–${CLOSE} น.`,
-    tel: PHONE,
     map: navUrl(17.871762, 102.742839),
-    fb: links.fbNongkhai,
+    fbKey: "fbNongkhai" as const,
   },
 ];
 

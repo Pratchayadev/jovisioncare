@@ -8,6 +8,7 @@ const items = [
   ["/admin/categories", "หมวดหมู่"],
   ["/admin/brands", "แบรนด์"],
   ["/admin/reviews", "รีวิว IG"],
+  ["/admin/settings", "ตั้งค่าร้าน"],
 ] as const;
 
 export default function AdminNav() {

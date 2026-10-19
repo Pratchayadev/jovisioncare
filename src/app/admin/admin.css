@@ -8,7 +8,7 @@
 .adm-top .in { max-width: 1200px; margin: 0 auto; padding: 10px 16px; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
 .adm-brand { font-family: "Bebas Neue", sans-serif; font-size: 22px; letter-spacing: .08em; margin-right: 12px; }
 .adm-brand small { font-family: "IBM Plex Mono", monospace; font-size: 10px; letter-spacing: .12em; color: #a9a5a1; margin-left: 6px; }
-.adm-nav { display: flex; gap: 2px; overflow-x: auto; scrollbar-width: none; }
+.adm-nav { display: flex; flex-wrap: wrap; gap: 2px; }
 .adm-nav a { padding: 8px 12px; border-radius: 999px; color: #d9d6d2; white-space: nowrap; }
 .adm-nav a:hover, .adm-nav a.on { background: #2a2828; color: #fff; }
 .adm-top .right { margin-left: auto; display: flex; gap: 8px; align-items: center; }

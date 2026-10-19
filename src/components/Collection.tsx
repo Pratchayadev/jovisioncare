@@ -4,10 +4,11 @@ import { useCallback, useState } from "react";
 import ProductCard from "./ProductCard";
 import ProductSheet from "./ProductSheet";
 import type { ProductCard as P } from "@/lib/queries";
+import type { Contact } from "@/lib/contact";
 
 type Cat = { slug: string; name: string };
 
-export default function Collection({ products, categories }: { products: P[]; categories: Cat[] }) {
+export default function Collection({ products, categories, c }: { products: P[]; categories: Cat[]; c: Contact }) {
   const [filter, setFilter] = useState("all");
   const [sel, setSel] = useState<P | null>(null);
   const close = useCallback(() => setSel(null), []);
@@ -28,7 +29,7 @@ export default function Collection({ products, categories }: { products: P[]; ca
       <Link className="more-link" href={current ? `/category/${current.slug}` : "/products"}>
         {current ? `ดู${current.name}ทั้งหมด →` : "ดูสินค้าทั้งหมด →"}
       </Link>
-      {sel && <ProductSheet p={sel} onClose={close} />}
+      {sel && <ProductSheet p={sel} c={c} onClose={close} />}
     </>
   );
 }

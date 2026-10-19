@@ -1,8 +1,9 @@
 import Link from "next/link";
-import { links, paymentCards, PHONE, PHONE_INTL } from "@/lib/site";
+import { paymentCards } from "@/lib/site";
+import type { Contact } from "@/lib/contact";
 import type { Brand, Category } from "@/db/schema";
 
-export default function ContactSection({ categories, brands }: { categories: Category[]; brands: Brand[] }) {
+export default function ContactSection({ categories, brands, c }: { categories: Category[]; brands: Brand[]; c: Contact }) {
   return (
     <section id="contact" className="contact dark" aria-labelledby="contact-title">
       <div className="wrap">
@@ -12,12 +13,12 @@ export default function ContactSection({ categories, brands }: { categories: Cat
           <p className="lead" style={{ maxWidth: 520 }}>สั่งซื้อ สอบถามราคา หรือนัดตรวจวัดสายตา ทักแอดมินได้ทุกช่องทาง ตอบไวทุกวัน</p>
         </div>
         <div className="grid-contact">
-          {links.line && <a className="ccard" href={links.line} target="_blank" rel="noopener"><b>LINE OA</b><span>{links.lineOaId}</span></a>}
-          <a className="ccard" href={links.fbUdon} target="_blank" rel="noopener"><b>MESSENGER</b><span>เพจสาขาอุดรธานี</span></a>
-          <a className="ccard" href={links.fbNongkhai} target="_blank" rel="noopener"><b>MESSENGER</b><span>เพจสาขาหนองคาย</span></a>
-          <a className="ccard red" href={links.igInbox} target="_blank" rel="noopener"><b>IG INBOX</b><span>@jovisioncare</span></a>
-          <a className="ccard" href={`tel:${PHONE_INTL}`}><b>โทร</b><span>{PHONE} · ทั้ง 2 สาขา</span></a>
-          <a className="ccard" href={links.tiktok} target="_blank" rel="noopener"><b>TIKTOK</b><span>{links.tiktokHandle}</span></a>
+          {c.line && <a className="ccard" href={c.line} target="_blank" rel="noopener"><b>LINE OA</b><span>{c.lineId || "เพิ่มเพื่อน"}</span></a>}
+          <a className="ccard" href={c.fbUdon} target="_blank" rel="noopener"><b>MESSENGER</b><span>เพจสาขาอุดรธานี</span></a>
+          <a className="ccard" href={c.fbNongkhai} target="_blank" rel="noopener"><b>MESSENGER</b><span>เพจสาขาหนองคาย</span></a>
+          <a className="ccard red" href={c.igInbox} target="_blank" rel="noopener"><b>IG INBOX</b><span>@{c.igHandle}</span></a>
+          {c.phone && <a className="ccard" href={`tel:${c.phoneIntl}`}><b>โทร</b><span>{c.phone} · ทั้ง 2 สาขา</span></a>}
+          <a className="ccard" href={c.tiktok} target="_blank" rel="noopener"><b>TIKTOK</b><span>@{c.tiktokHandle}</span></a>
         </div>
         <footer className="site-footer">
           <nav aria-label="หมวดสินค้า">

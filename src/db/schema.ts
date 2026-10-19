@@ -65,6 +65,13 @@ export const productImages = sqliteTable(
   (t) => [index("product_images_product_idx").on(t.productId)],
 );
 
+// ค่าตั้งค่าร้านแบบ key-value (ลิงก์โซเชียล เบอร์โทร ฯลฯ) — แก้ได้ที่ /admin/settings
+export const settings = sqliteTable("settings", {
+  key: text("key").primaryKey(),
+  value: text("value").notNull().default(""),
+  updatedAt: integer("updated_at", { mode: "timestamp" }).notNull().default(sql`(unixepoch())`).$onUpdate(() => new Date()),
+});
+
 // รีวิวจากโพสต์ IG ที่ลูกค้าแท็กร้าน — จัดการได้ที่ /admin/reviews
 export const reviews = sqliteTable("reviews", {
   id: integer("id").primaryKey({ autoIncrement: true }),

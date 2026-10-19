@@ -6,7 +6,8 @@ import Collection from "@/components/Collection";
 import JsonLd from "@/components/JsonLd";
 import { getBrands, getCategories, getPublishedProducts, getPublishedReviews, toCard } from "@/lib/queries";
 import IgPost from "@/components/IgPost";
-import { absoluteUrl, branches, links, PHONE_INTL, site, SITE_URL, storePhotos, storePhotosNongKhai } from "@/lib/site";
+import { absoluteUrl, branches, site, SITE_URL, storePhotos, storePhotosNongKhai } from "@/lib/site";
+import { getContact } from "@/lib/settings";
 import type { Metadata } from "next";
 
 export const revalidate = 3600;
@@ -19,7 +20,7 @@ export const metadata: Metadata = {
 };
 
 export default async function Home() {
-  const [products, categories, brands, reviews] = await Promise.all([getPublishedProducts({ featuredOnly: true, limit: 24 }), getCategories(), getBrands(), getPublishedReviews()]);
+  const [products, categories, brands, reviews, c] = await Promise.all([getPublishedProducts({ featuredOnly: true, limit: 24 }), getCategories(), getBrands(), getPublishedReviews(), getContact()]);
   const cards = products.map(toCard);
 
   const jsonLd = {
@@ -38,8 +39,8 @@ export default async function Home() {
         geo: { "@type": "GeoCoordinates", latitude: b.lat, longitude: b.lng },
         hasMap: `https://www.google.com/maps/search/?api=1&query=${b.lat},${b.lng}`,
         openingHoursSpecification: [{ "@type": "OpeningHoursSpecification", dayOfWeek: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"], opens: b.opens, closes: b.closes }],
-        telephone: PHONE_INTL,
-        sameAs: [b.fb, links.ig, links.tiktok],
+        ...(c.phoneIntl ? { telephone: c.phoneIntl } : {}),
+        sameAs: [c[b.fbKey], c.ig, c.tiktok],
         priceRange: "฿฿",
       })),
     ],
@@ -65,7 +66,7 @@ export default async function Home() {
           <h2 id="collection-title" className="h2">กรอบแว่นแบรนด์แท้ คัดมาให้เข้ากับหน้าคุณ</h2>
           <p className="lead">แตะที่สินค้าเพื่อปัดดูภาพทุกมุม แล้วส่งรุ่นที่ชอบให้แอดมินได้ทันที</p>
         </div>
-        <Collection products={cards} categories={categories.map((c) => ({ slug: c.slug, name: c.name }))} />
+        <Collection products={cards} categories={categories.map((x) => ({ slug: x.slug, name: x.name }))} c={c} />
       </section>
 
       <LensLab />
@@ -111,7 +112,7 @@ export default async function Home() {
           <p className="eyebrow">04 — #JOVISIONCARE</p>
           <h2 id="reviews-title" className="h2">ลูกค้าตัวจริง แท็กเราบน IG</h2>
           <p className="lead">ภาพจากลูกค้าที่แท็ก @jovisioncare ขอบคุณทุกคนที่ไว้ใจให้เราดูแลสายตา</p>
-          <a href={links.ig} target="_blank" rel="noopener" className="more-link" style={{ marginTop: 6 }}>ติดตามบน Instagram →</a>
+          <a href={c.ig} target="_blank" rel="noopener" className="more-link" style={{ marginTop: 6 }}>ติดตามบน Instagram →</a>
         </div>
         <div className="ig-feed">
           {reviews.map((r) => <IgPost key={r.id} r={r} />)}
@@ -145,11 +146,11 @@ export default async function Home() {
               <dl>
                 <dt>ที่อยู่</dt><dd>{b.addr}</dd>
                 <dt>เวลา</dt><dd>{b.hours}</dd>
-                {b.tel && (<><dt>โทร</dt><dd><a href={`tel:${b.tel.replace(/[^0-9+]/g, "")}`}>{b.tel}</a></dd></>)}
+                {c.phone && (<><dt>โทร</dt><dd><a href={`tel:${c.phoneIntl}`}>{c.phone}</a></dd></>)}
               </dl>
               <div className="row-btns">
                 <a href={b.map} target="_blank" rel="noopener" className="pill solid">นำทาง Google Maps</a>
-                <a href={b.fb} target="_blank" rel="noopener" className="pill">เพจ Facebook</a>
+                <a href={c[b.fbKey]} target="_blank" rel="noopener" className="pill">เพจ Facebook</a>
               </div>
             </article>
           ))}
