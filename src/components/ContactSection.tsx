@@ -12,11 +12,11 @@ export default function ContactSection({ categories, brands }: { categories: Cat
           <p className="lead" style={{ maxWidth: 520 }}>สั่งซื้อ สอบถามราคา หรือนัดตรวจวัดสายตา ทักแอดมินได้ทุกช่องทาง ตอบไวทุกวัน</p>
         </div>
         <div className="grid-contact">
-          <a className="ccard" href={links.line} target="_blank" rel="noopener"><b>LINE OA</b><span>@jovisioncare</span></a>
+          {links.line && <a className="ccard" href={links.line} target="_blank" rel="noopener"><b>LINE OA</b><span>{links.lineOaId}</span></a>}
           <a className="ccard" href={links.fbUdon} target="_blank" rel="noopener"><b>MESSENGER</b><span>เพจสาขาอุดรธานี</span></a>
           <a className="ccard" href={links.fbNongkhai} target="_blank" rel="noopener"><b>MESSENGER</b><span>เพจสาขาหนองคาย</span></a>
           <a className="ccard red" href={links.igInbox} target="_blank" rel="noopener"><b>IG INBOX</b><span>@jovisioncare</span></a>
-          <a className="ccard" href={links.tiktok} target="_blank" rel="noopener"><b>TIKTOK</b><span>@jovisioncare</span></a>
+          <a className="ccard" href={links.tiktok} target="_blank" rel="noopener"><b>TIKTOK</b><span>{links.tiktokHandle}</span></a>
         </div>
         <footer className="site-footer">
           <nav aria-label="หมวดสินค้า">

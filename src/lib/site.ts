@@ -15,17 +15,20 @@ export const site = {
 };
 
 export const links = {
-  line: "https://line.me/R/ti/p/@jovisioncare",
+  // LINE OA: ใส่ลิงก์เมื่อพร้อม (เช่น "https://line.me/R/ti/p/@jovisioncare") — ถ้าเว้นว่าง ปุ่ม LINE ทุกจุดจะถูกซ่อน
+  line: "",
   lineOaId: "@jovisioncare",
   fbUdon: "https://www.facebook.com/profile.php?id=61594085984685",
   fbNongkhai: "https://www.facebook.com/profile.php?id=100063572375151",
   igInbox: "https://ig.me/m/jovisioncare",
   ig: "https://www.instagram.com/jovisioncare",
-  tiktok: "https://www.tiktok.com/@jovisioncare",
+  tiktok: "https://www.tiktok.com/@j.o.visioncare",
+  tiktokHandle: "@j.o.visioncare",
 };
 
+/** ลิงก์เปิดแชท LINE OA พร้อมข้อความ — คืน null ถ้ายังไม่ได้ตั้งลิงก์ LINE */
 export const lineMessage = (text: string) =>
-  `https://line.me/R/oaMessage/${links.lineOaId}/?` + encodeURIComponent(text);
+  links.line ? `https://line.me/R/oaMessage/${links.lineOaId}/?` + encodeURIComponent(text) : null;
 
 export const branches = [
   {

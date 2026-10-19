@@ -179,7 +179,7 @@ button { font-family: inherit; }
 .pay span { height: 32px; min-width: 52px; padding: 0 10px; background: var(--paper); border-radius: 6px; display: grid; place-items: center; font-family: var(--font-mono); font-size: 10px; font-weight: 500; color: var(--ink); letter-spacing: .04em; }
 
 /* ---------- Quick contact dock ---------- */
-.dock { position: fixed; z-index: 50; left: 50%; bottom: calc(12px + env(safe-area-inset-bottom)); transform: translateX(-50%); width: min(calc(100% - 24px), 460px); background: var(--ink); border-radius: 999px; padding: 6px; display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; box-shadow: 0 10px 30px rgba(0,0,0,.25); }
+.dock { position: fixed; z-index: 50; left: 50%; bottom: calc(12px + env(safe-area-inset-bottom)); transform: translateX(-50%); width: min(calc(100% - 24px), 460px); background: var(--ink); border-radius: 999px; padding: 6px; display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; gap: 6px; box-shadow: 0 10px 30px rgba(0,0,0,.25); }
 .dock a { color: var(--paper); text-align: center; font-size: 14px; padding: 12px 4px; border-radius: 999px; }
 .dock a.light { background: var(--paper); color: var(--ink); font-weight: 600; }
 .dock a.red { background: var(--red); color: #fff; font-weight: 600; }
@@ -212,7 +212,7 @@ button { font-family: inherit; }
 .thumbs button.on { border-color: var(--ink); }
 .thumbs img { object-fit: cover; }
 .sheet-desc { margin: 0; font-size: 14px; line-height: 1.7; color: #3d3a37; white-space: pre-line; }
-.ask { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
+.ask { display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; gap: 8px; }
 .ask a { border: 1px solid var(--ink); text-align: center; font-size: 14px; padding: 14px 6px; border-radius: 12px; }
 .ask a.solid { background: var(--ink); color: #fff !important; font-weight: 600; }
 .ask-note { margin: 0; font-family: var(--font-mono); font-size: 11px; color: var(--muted-2); text-align: center; }
