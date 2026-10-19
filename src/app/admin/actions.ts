@@ -21,7 +21,11 @@ function friendly(e: unknown) {
   const msg = e instanceof Error ? e.message : String(e);
   if (/UNIQUE constraint failed: \w+\.slug/.test(msg)) return "Slug นี้ถูกใช้แล้ว กรุณาเปลี่ยน";
   if (/UNIQUE constraint failed: \w+\.code/.test(msg)) return "รหัสสินค้านี้ถูกใช้แล้ว";
-  return msg;
+  if (msg.startsWith("Failed query")) {
+    const cause = e instanceof Error && e.cause instanceof Error ? e.cause.message : "";
+    return `ฐานข้อมูลไม่รับข้อมูล${cause ? ` (${cause.slice(0, 160)})` : ""}`;
+  }
+  return msg.slice(0, 300);
 }
 
 /* ---------- Auth ---------- */
@@ -191,6 +195,11 @@ export async function saveReview(_: FormState, f: FormData): Promise<FormState> 
   if (postUrl && !/^https:\/\/(www\.)?instagram\.com\//i.test(postUrl)) return { error: "ลิงก์โพสต์ต้องเป็นลิงก์ instagram.com" };
 
   const current = id ? await db.query.reviews.findFirst({ where: eq(t.reviews.id, id) }) : null;
+  if (id && !current) return { error: "ไม่พบรีวิวนี้ในฐานข้อมูล (อาจถูกลบไปแล้ว)" };
+  const image = files(f, "image")[0];
+  const avatar = files(f, "avatar")[0];
+  if (!image && !current?.image) return { error: "กรุณาเลือกรูปโพสต์" };
+
   const values: Partial<typeof t.reviews.$inferInsert> = {
     handle,
     postUrl,
@@ -200,18 +209,28 @@ export async function saveReview(_: FormState, f: FormData): Promise<FormState> 
     published: f.get("published") === "on",
     sortOrder: int(f, "sortOrder") ?? 0,
   };
+  const uploaded: string[] = [];
+  let savedId = id;
   try {
-    const image = files(f, "image")[0];
-    const avatar = files(f, "avatar")[0];
-    if (image) { values.image = await saveImage(image, "reviews"); if (current?.image) await deleteImage(current.image); }
-    if (avatar) { values.avatar = await saveImage(avatar, "reviews"); if (current?.avatar) await deleteImage(current.avatar); }
-    else if (f.get("removeAvatar") === "on" && current?.avatar) { values.avatar = null; await deleteImage(current.avatar); }
-    if (!values.image && !current?.image) return { error: "กรุณาเลือกรูปโพสต์" };
+    if (image) uploaded.push((values.image = await saveImage(image, "reviews")));
+    if (avatar) uploaded.push((values.avatar = await saveImage(avatar, "reviews")));
+    else if (f.get("removeAvatar") === "on") values.avatar = null;
+
     if (id) await db.update(t.reviews).set(values).where(eq(t.reviews.id, id));
-    else await db.insert(t.reviews).values(values as typeof t.reviews.$inferInsert);
+    else savedId = (await db.insert(t.reviews).values(values as typeof t.reviews.$inferInsert).returning({ id: t.reviews.id }))[0]?.id ?? null;
+
+    // อ่านกลับมาตรวจว่าบันทึกลงฐานข้อมูลจริง
+    const check = savedId ? await db.query.reviews.findFirst({ where: eq(t.reviews.id, savedId) }) : null;
+    if (!check || check.handle !== handle) throw new Error("บันทึกไม่สำเร็จ: อ่านข้อมูลกลับจากฐานข้อมูลไม่เจอ");
   } catch (e) {
-    return { error: friendly(e) };
+    console.error("[saveReview] failed", { id, handle, uploaded, error: e instanceof Error ? e.message : e });
+    await Promise.all(uploaded.map(deleteImage)); // ไม่ให้มีรูปค้างใน R2 ถ้าบันทึกไม่สำเร็จ
+    return { error: `บันทึกไม่สำเร็จ — ${friendly(e)}` };
   }
+  // ลบรูปเก่าหลังบันทึกสำเร็จเท่านั้น
+  if (image && current?.image) await deleteImage(current.image);
+  if ((avatar || f.get("removeAvatar") === "on") && current?.avatar) await deleteImage(current.avatar);
+  console.info("[saveReview] ok", { id: savedId, handle });
   refresh();
   redirect("/admin/reviews?saved=1");
 }
