@@ -62,3 +62,6 @@ export function toCard(p: ProductFull) {
   };
 }
 export type ProductCard = ReturnType<typeof toCard>;
+
+export const getPublishedReviews = () =>
+  db.query.reviews.findMany({ where: eq(t.reviews.published, true), orderBy: [asc(t.reviews.sortOrder), desc(t.reviews.id)], limit: 12 });

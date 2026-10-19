@@ -1,6 +1,6 @@
 import Link from "next/link";
 
-export default function SiteHeader() {
+export default function SiteHeader({ hasReviews = false }: { hasReviews?: boolean }) {
   return (
     <header className="site-header">
       <div className="wrap bar">
@@ -20,7 +20,7 @@ export default function SiteHeader() {
         <Link href="/#collection">คอลเลกชัน</Link>
         <Link href="/#lens-lab">ทดลองเลนส์</Link>
         <Link href="/#store">บรรยากาศร้าน</Link>
-        <Link href="/#reviews">รีวิวจาก IG</Link>
+        {hasReviews && <Link href="/#reviews">รีวิวจาก IG</Link>}
         <Link href="/#branches">อุดร · หนองคาย</Link>
       </nav>
     </header>

@@ -4,8 +4,9 @@ import HeroLens from "@/components/HeroLens";
 import LensLab from "@/components/LensLab";
 import Collection from "@/components/Collection";
 import JsonLd from "@/components/JsonLd";
-import { getBrands, getCategories, getPublishedProducts, toCard } from "@/lib/queries";
-import { absoluteUrl, branches, links, PHONE_INTL, reviews, site, SITE_URL, storePhotos, storePhotosNongKhai } from "@/lib/site";
+import { getBrands, getCategories, getPublishedProducts, getPublishedReviews, toCard } from "@/lib/queries";
+import IgPost from "@/components/IgPost";
+import { absoluteUrl, branches, links, PHONE_INTL, site, SITE_URL, storePhotos, storePhotosNongKhai } from "@/lib/site";
 import type { Metadata } from "next";
 
 export const revalidate = 3600;
@@ -18,7 +19,7 @@ export const metadata: Metadata = {
 };
 
 export default async function Home() {
-  const [products, categories, brands] = await Promise.all([getPublishedProducts({ featuredOnly: true, limit: 24 }), getCategories(), getBrands()]);
+  const [products, categories, brands, reviews] = await Promise.all([getPublishedProducts({ featuredOnly: true, limit: 24 }), getCategories(), getBrands(), getPublishedReviews()]);
   const cards = products.map(toCard);
 
   const jsonLd = {
@@ -104,22 +105,19 @@ export default async function Home() {
         </div>
       </section>
 
+      {reviews.length > 0 && (
       <section id="reviews" className="section" aria-labelledby="reviews-title">
         <div className="sec-head reviews-head" data-reveal="">
           <p className="eyebrow">04 — #JOVISIONCARE</p>
           <h2 id="reviews-title" className="h2">ลูกค้าตัวจริง แท็กเราบน IG</h2>
-          <p className="lead">ภาพจากลูกค้าที่แท็ก @jovisioncare อัปเดตอัตโนมัติ ขอบคุณทุกคนที่ไว้ใจให้เราดูแลสายตา</p>
+          <p className="lead">ภาพจากลูกค้าที่แท็ก @jovisioncare ขอบคุณทุกคนที่ไว้ใจให้เราดูแลสายตา</p>
           <a href={links.ig} target="_blank" rel="noopener" className="more-link" style={{ marginTop: 6 }}>ติดตามบน Instagram →</a>
         </div>
-        <div className="grid-reviews">
-          {reviews.map((r) => (
-            <a key={r.handle} href={links.ig} target="_blank" rel="noopener" className="review" data-reveal="">
-              <div className="review-ph">ig tagged photo<span className="review-handle">{r.handle}</span></div>
-              <p>กรอบแบรนด์ <strong>{r.brand}</strong> · {r.branch}</p>
-            </a>
-          ))}
+        <div className="ig-feed">
+          {reviews.map((r) => <IgPost key={r.id} r={r} />)}
         </div>
       </section>
+      )}
 
       <section id="brands" className="section brands" aria-label="แบรนด์ที่จำหน่าย">
         <p className="eyebrow">AUTHORIZED BRANDS — แบรนด์แท้ที่ร้านเราจำหน่าย</p>

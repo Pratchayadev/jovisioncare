@@ -99,3 +99,9 @@
 .login form { width: min(100%, 380px); background: var(--paper); border-radius: 18px; padding: 28px 22px; display: grid; gap: 14px; }
 .login h1 { margin: 0; font-family: "Bebas Neue", sans-serif; font-weight: 400; font-size: 34px; letter-spacing: .06em; line-height: 1; }
 .login p { margin: 0; color: var(--muted); }
+.ig-preview { border: 1px solid #dbdbdb; border-radius: 12px; overflow: hidden; background: #fff; max-width: 280px; }
+.ig-preview .h { display: flex; align-items: center; gap: 8px; padding: 8px 10px; font-size: 13px; }
+.ig-preview .ring { width: 32px; height: 32px; border-radius: 50%; padding: 2px; background: conic-gradient(from 210deg, #feda75, #fa7e1e, #d62976, #962fbf, #4f5bd5, #feda75); display: grid; }
+.ig-preview .ring img, .ig-preview .ring span { width: 100%; height: 100%; border-radius: 50%; border: 2px solid #fff; object-fit: cover; background: #efefef; display: grid; place-items: center; font-weight: 700; font-size: 12px; }
+.ig-preview .m { aspect-ratio: 1/1; background: #efefef; display: grid; place-items: center; color: var(--muted); }
+.ig-preview .m img { width: 100%; height: 100%; object-fit: cover; }

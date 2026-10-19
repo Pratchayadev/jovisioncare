@@ -6,11 +6,12 @@ export const dynamic = "force-dynamic";
 
 export default async function Dashboard() {
   const n = async (q: Promise<{ c: number }[]>) => (await q)[0].c;
-  const [products, hidden, categories, brands] = await Promise.all([
+  const [products, hidden, categories, brands, reviews] = await Promise.all([
     n(db.select({ c: count() }).from(t.products)),
     n(db.select({ c: count() }).from(t.products).where(eq(t.products.published, false))),
     n(db.select({ c: count() }).from(t.categories)),
     n(db.select({ c: count() }).from(t.brands)),
+    n(db.select({ c: count() }).from(t.reviews)),
   ]);
   return (
     <>
@@ -22,6 +23,7 @@ export default async function Dashboard() {
         <div className="card stat"><b>{products}</b><span>สินค้าทั้งหมด{hidden ? ` (ซ่อน ${hidden})` : ""}</span><Link href="/admin/products">จัดการสินค้า</Link></div>
         <div className="card stat"><b>{categories}</b><span>หมวดหมู่</span><Link href="/admin/categories">จัดการหมวดหมู่</Link></div>
         <div className="card stat"><b>{brands}</b><span>แบรนด์</span><Link href="/admin/brands">จัดการแบรนด์</Link></div>
+        <div className="card stat"><b>{reviews}</b><span>รีวิว IG</span><Link href="/admin/reviews">จัดการรีวิว</Link></div>
       </div>
       <div className="card panel">
         <h2>ทิปส์ SEO</h2>

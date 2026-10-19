@@ -65,6 +65,21 @@ export const productImages = sqliteTable(
   (t) => [index("product_images_product_idx").on(t.productId)],
 );
 
+// รีวิวจากโพสต์ IG ที่ลูกค้าแท็กร้าน — จัดการได้ที่ /admin/reviews
+export const reviews = sqliteTable("reviews", {
+  id: integer("id").primaryKey({ autoIncrement: true }),
+  handle: text("handle").notNull(), // ชื่อ IG ลูกค้า เช่น barayb (ไม่ต้องมี @)
+  avatar: text("avatar"), // รูปโปรไฟล์ (ไม่ใส่ = แสดงตัวอักษรแรก)
+  image: text("image").notNull(), // รูปโพสต์
+  postUrl: text("post_url"), // ลิงก์โพสต์ IG ต้นฉบับ
+  brand: text("brand"), // แบรนด์กรอบในรูป
+  branch: text("branch"), // สาขา
+  caption: text("caption"),
+  published: integer("published", { mode: "boolean" }).notNull().default(true),
+  sortOrder: integer("sort_order").notNull().default(0),
+  ...timestamps,
+});
+
 export const categoriesRelations = relations(categories, ({ many }) => ({ products: many(products) }));
 export const brandsRelations = relations(brands, ({ many }) => ({ products: many(products) }));
 export const productsRelations = relations(products, ({ one, many }) => ({
@@ -80,3 +95,4 @@ export type Category = typeof categories.$inferSelect;
 export type Brand = typeof brands.$inferSelect;
 export type Product = typeof products.$inferSelect;
 export type ProductImage = typeof productImages.$inferSelect;
+export type Review = typeof reviews.$inferSelect;

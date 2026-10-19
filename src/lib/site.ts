@@ -73,16 +73,6 @@ export const branches = [
   },
 ];
 
-export const reviews = [
-  ["@barayb", "Bolon", "อุดรธานี"],
-  ["@aaeyea", "Clrotte", "อุดรธานี"],
-  ["@plugsw", "S7&ILUVU", "หนองคาย"],
-  ["@siminapa_", "Helen Keller", "หนองคาย"],
-  ["@customer05", "Bolon", "อุดรธานี"],
-  ["@customer06", "AIRA", "หนองคาย"],
-  ["@customer07", "Helen Keller", "อุดรธานี"],
-  ["@customer08", "Clrotte", "หนองคาย"],
-].map(([handle, brand, branch]) => ({ handle, brand, branch }));
 
 // รูปบรรยากาศร้าน (public/images/store) — alt ช่วยให้ติด Google Images
 export const storePhotosNongKhai = [

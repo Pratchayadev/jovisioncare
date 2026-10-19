@@ -176,3 +176,62 @@ async function deleteTaxonomy(kind: Kind, f: FormData) {
 }
 export async function deleteCategory(f: FormData) { return deleteTaxonomy("categories", f); }
 export async function deleteBrand(f: FormData) { return deleteTaxonomy("brands", f); }
+
+/* ---------- Reviews (IG) ---------- */
+function normalizeHandle(h: string) {
+  return h.trim().replace(/^https?:\/\/(www\.)?instagram\.com\//i, "").replace(/[/?#].*$/, "").replace(/^@+/, "");
+}
+
+export async function saveReview(_: FormState, f: FormData): Promise<FormState> {
+  await requireAdmin();
+  const id = int(f, "id");
+  const handle = normalizeHandle(str(f, "handle"));
+  if (!handle) return { error: "กรุณากรอกชื่อ IG ของลูกค้า" };
+  const postUrl = opt(f, "postUrl");
+  if (postUrl && !/^https:\/\/(www\.)?instagram\.com\//i.test(postUrl)) return { error: "ลิงก์โพสต์ต้องเป็นลิงก์ instagram.com" };
+
+  const current = id ? await db.query.reviews.findFirst({ where: eq(t.reviews.id, id) }) : null;
+  const values: Partial<typeof t.reviews.$inferInsert> = {
+    handle,
+    postUrl,
+    brand: opt(f, "brand"),
+    branch: opt(f, "branch"),
+    caption: opt(f, "caption"),
+    published: f.get("published") === "on",
+    sortOrder: int(f, "sortOrder") ?? 0,
+  };
+  try {
+    const image = files(f, "image")[0];
+    const avatar = files(f, "avatar")[0];
+    if (image) { values.image = await saveImage(image, "reviews"); if (current?.image) await deleteImage(current.image); }
+    if (avatar) { values.avatar = await saveImage(avatar, "reviews"); if (current?.avatar) await deleteImage(current.avatar); }
+    else if (f.get("removeAvatar") === "on" && current?.avatar) { values.avatar = null; await deleteImage(current.avatar); }
+    if (!values.image && !current?.image) return { error: "กรุณาเลือกรูปโพสต์" };
+    if (id) await db.update(t.reviews).set(values).where(eq(t.reviews.id, id));
+    else await db.insert(t.reviews).values(values as typeof t.reviews.$inferInsert);
+  } catch (e) {
+    return { error: friendly(e) };
+  }
+  refresh();
+  redirect("/admin/reviews?saved=1");
+}
+
+export async function deleteReview(f: FormData) {
+  await requireAdmin();
+  const id = int(f, "id");
+  if (!id) return;
+  const r = await db.query.reviews.findFirst({ where: eq(t.reviews.id, id) });
+  await db.delete(t.reviews).where(eq(t.reviews.id, id));
+  if (r) await Promise.all([deleteImage(r.image), r.avatar ? deleteImage(r.avatar) : null]);
+  refresh();
+  redirect("/admin/reviews?deleted=1");
+}
+
+export async function toggleReview(f: FormData) {
+  await requireAdmin();
+  const id = int(f, "id");
+  if (!id) return;
+  const r = await db.query.reviews.findFirst({ where: eq(t.reviews.id, id) });
+  if (r) await db.update(t.reviews).set({ published: !r.published }).where(eq(t.reviews.id, id));
+  refresh();
+}
