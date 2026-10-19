@@ -31,6 +31,9 @@ export const lineMessage = (text: string) =>
   links.line ? `https://line.me/R/oaMessage/${links.lineOaId}/?` + encodeURIComponent(text) : null;
 
 // เวลาเปิด–ปิด (ใช้ทั้งบนหน้าเว็บและข้อมูลสำหรับ Google)
+// เบอร์โทร (ใช้ร่วมกันทั้ง 2 สาขา)
+export const PHONE = "098-424-5224";
+export const PHONE_INTL = "+66984245224";
 const OPEN = "10:00";
 const CLOSE = "20:00";
 const navUrl = (lat: number, lng: number) => `https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}`;
@@ -48,7 +51,7 @@ export const branches = [
     opens: OPEN,
     closes: CLOSE,
     hours: `${OPEN}–${CLOSE} น.`,
-    tel: "", // ใส่เบอร์เมื่อพร้อม เช่น "042-123456" — ว่างไว้ = ไม่แสดงแถวโทร
+    tel: PHONE,
     map: navUrl(17.41869, 102.785187),
     fb: links.fbUdon,
   },
@@ -64,7 +67,7 @@ export const branches = [
     opens: OPEN,
     closes: CLOSE,
     hours: `${OPEN}–${CLOSE} น.`,
-    tel: "",
+    tel: PHONE,
     map: navUrl(17.871762, 102.742839),
     fb: links.fbNongkhai,
   },
@@ -81,7 +84,16 @@ export const reviews = [
   ["@customer08", "Clrotte", "หนองคาย"],
 ].map(([handle, brand, branch]) => ({ handle, brand, branch }));
 
-export const storeShots = ["โซนตรวจวัดสายตา", "ชั้นโชว์แว่นกันแดด", "หน้าร้าน สาขาหนองคาย", "ทีมงาน / ช่างตัดแว่น"];
+// รูปบรรยากาศร้าน (public/images/store) — alt ช่วยให้ติด Google Images
+export const storePhotos = [
+  { src: "/images/store/interior-eye-test.jpg", alt: "มุมตรวจวัดสายตาและโต๊ะลองกรอบแว่น ภายในร้าน J.O. Vision Care" },
+  { src: "/images/store/entrance.jpg", alt: "ทางเข้าร้านแว่น J.O. Vision Care โทนขาวสว่าง พร้อมโต๊ะโชว์กรอบแว่น" },
+  { src: "/images/store/display-table.jpg", alt: "โต๊ะโชว์กรอบแว่นสายตาและชั้นวางแว่นแบรนด์แท้ ร้านแว่นอุดร" },
+  { src: "/images/store/selfie-mirror.jpg", alt: "กระจก Today's Selfie is Tomorrow's Biometric Profile และชั้นโชว์แว่น" },
+  { src: "/images/store/instagram-mirror.jpg", alt: "กระจกถ่ายรูปกรอบ Instagram และชั้นวางแว่น J.O. Vision Care" },
+  { src: "/images/store/red-chair-corner.jpg", alt: "มุมเก้าอี้สีแดงและชั้นวางแว่นตา ภายในร้าน" },
+  { src: "/images/store/welcome.jpg", alt: "พื้นหน้าร้าน It's nice to have you here และพรมต้อนรับ" },
+];
 
 export const paymentCards = ["VISA", "MASTERCARD", "JCB", "UNIONPAY", "PROMPTPAY"];
 

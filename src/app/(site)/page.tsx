@@ -5,7 +5,7 @@ import LensLab from "@/components/LensLab";
 import Collection from "@/components/Collection";
 import JsonLd from "@/components/JsonLd";
 import { getBrands, getCategories, getPublishedProducts, toCard } from "@/lib/queries";
-import { absoluteUrl, branches, links, reviews, site, SITE_URL, storeShots } from "@/lib/site";
+import { absoluteUrl, branches, links, PHONE_INTL, reviews, site, SITE_URL, storePhotos } from "@/lib/site";
 import type { Metadata } from "next";
 
 export const revalidate = 3600;
@@ -37,7 +37,7 @@ export default async function Home() {
         geo: { "@type": "GeoCoordinates", latitude: b.lat, longitude: b.lng },
         hasMap: `https://www.google.com/maps/search/?api=1&query=${b.lat},${b.lng}`,
         openingHoursSpecification: [{ "@type": "OpeningHoursSpecification", dayOfWeek: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"], opens: b.opens, closes: b.closes }],
-        ...(b.tel ? { telephone: b.tel } : {}),
+        telephone: PHONE_INTL,
         sameAs: [b.fb, links.ig, links.tiktok],
         priceRange: "฿฿",
       })),
@@ -80,7 +80,18 @@ export default async function Home() {
             <Image src="/images/store.jpg" alt="บรรยากาศภายในร้านแว่นตา J.O. Vision Care สาขาอุดรธานี" fill sizes="(min-width: 1240px) 1208px, 100vw" />
             <figcaption>หน้าร้าน · สาขาอุดรธานี</figcaption>
           </figure>
-          {storeShots.map((s) => <div key={s} className="store-ph" data-reveal="">{s}</div>)}
+        </div>
+        <div className="store-photos">
+          {storePhotos.map((ph) => (
+            <figure key={ph.src} className="store-photo" data-reveal="">
+              <Image src={ph.src} alt={ph.alt} fill sizes="(min-width: 900px) 300px, 50vw" />
+            </figure>
+          ))}
+          <Link href="#branches" className="store-tile" data-reveal="">
+            <span className="display">COME SEE US.</span>
+            <span>2 สาขา อุดรธานี · หนองคาย<br />เปิดทุกวัน 10:00–20:00 น.</span>
+            <span className="go">ดูแผนที่ →</span>
+          </Link>
         </div>
       </section>
 

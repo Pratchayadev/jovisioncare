@@ -129,6 +129,15 @@ button { font-family: inherit; }
 .store-main { margin: 0; grid-column: span 6; border-radius: 16px; overflow: hidden; position: relative; aspect-ratio: 4/3; max-height: 640px; width: 100%; }
 .store-main img { object-fit: cover; }
 .store-main figcaption { position: absolute; left: 12px; bottom: 12px; background: var(--paper); font-size: 13px; padding: 6px 12px; border-radius: 999px; }
+.store-photos { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; margin-top: 10px; }
+@media (min-width: 900px) { .store-photos { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+.store-photo { margin: 0; position: relative; aspect-ratio: 3/4; border-radius: 16px; overflow: hidden; background: #e8e6e2; }
+.store-photo img { object-fit: cover; transition: transform .6s cubic-bezier(.2,.7,.2,1); }
+.store-photo:hover img { transform: scale(1.04); }
+.store-tile { aspect-ratio: 3/4; border-radius: 16px; background: var(--ink); color: var(--paper) !important; padding: 18px; display: flex; flex-direction: column; justify-content: flex-end; gap: 10px; font-size: 14px; line-height: 1.6; }
+.store-tile .display { font-size: clamp(36px, 9vw, 56px); line-height: .9; letter-spacing: .03em; color: #fff; }
+.store-tile .go { font-weight: 600; color: var(--red); }
+.store-tile:hover .go { text-decoration: underline; }
 .store-ph { grid-column: span 3; aspect-ratio: 1/1; border-radius: 16px; background: var(--stripes); display: grid; place-items: center; padding: 12px; text-align: center; font-family: var(--font-mono); font-size: 10px; color: #8a8682; letter-spacing: .06em; }
 
 /* ---------- Reviews ---------- */
