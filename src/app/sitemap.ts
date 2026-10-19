@@ -14,6 +14,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const abs = (u: string) => (u.startsWith("http") ? u : SITE_URL + u);
   return [
     { url: SITE_URL + "/", changeFrequency: "weekly", priority: 1 },
+    { url: SITE_URL + "/udon-thani", changeFrequency: "monthly", priority: 0.9 },
+    { url: SITE_URL + "/nong-khai", changeFrequency: "monthly", priority: 0.9 },
     { url: SITE_URL + "/products", changeFrequency: "weekly", priority: 0.8 },
     ...categories.map((c) => ({ url: `${SITE_URL}/category/${c.slug}`, lastModified: c.updatedAt, priority: 0.7 })),
     ...brands.map((b) => ({ url: `${SITE_URL}/brand/${b.slug}`, lastModified: b.updatedAt, priority: 0.6 })),

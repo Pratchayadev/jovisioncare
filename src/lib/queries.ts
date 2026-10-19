@@ -55,6 +55,7 @@ export function toCard(p: ProductFull) {
     brand: p.brand?.name ?? "",
     brandSlug: p.brand?.slug ?? null,
     categorySlug: p.category?.slug ?? null,
+    categoryName: p.category?.name ?? null,
     tag: p.tag ?? "",
     price: p.price,
     description: p.description,

@@ -6,7 +6,7 @@ import ProductCard from "@/components/ProductCard";
 import AskButtons from "@/components/AskButtons";
 import JsonLd from "@/components/JsonLd";
 import { getProductBySlug, getRelatedProducts, toCard } from "@/lib/queries";
-import { absoluteUrl, defaultProductDesc, site } from "@/lib/site";
+import { absoluteUrl, clip, productDesc, site } from "@/lib/site";
 import { getContact } from "@/lib/settings";
 
 export const revalidate = 3600;
@@ -18,7 +18,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   if (!p) return {};
   const brand = p.brand?.name ?? "";
   const title = p.metaTitle || `${brand} ${p.name} (${p.code})`.trim();
-  const description = p.metaDescription || `${brand} ${p.name} ${p.description || defaultProductDesc} — J.O. Vision Care ร้านแว่นอุดร หนองคาย`.slice(0, 160);
+  const description = p.metaDescription || clip(productDesc({ brand, name: p.name, categoryName: p.category?.name, description: p.description }));
   const img = p.images[0]?.url;
   return {
     title,
@@ -54,7 +54,7 @@ export default async function ProductPage({ params }: Props) {
               sku: p.code,
               url,
               image: p.images.map((i) => absoluteUrl(i.url)),
-              description: p.description || defaultProductDesc,
+              description: productDesc(card),
               category: p.category?.name,
               ...(p.brand ? { brand: { "@type": "Brand", name: p.brand.name } } : {}),
               ...(p.price
@@ -78,7 +78,7 @@ export default async function ProductPage({ params }: Props) {
             <h1>{p.name}</h1>
             {p.price ? <span className="pd-price">{p.price.toLocaleString("th-TH")} บาท</span> : null}
             {p.tag && <span className="pcard-tag" style={{ fontSize: 14 }}>{p.tag}</span>}
-            <p className="sheet-desc">{p.description || defaultProductDesc}</p>
+            <p className="sheet-desc">{productDesc(card)}</p>
             <dl className="pd-meta">
               <dt>รหัสสินค้า</dt><dd className="mono">{p.code}</dd>
               {p.category && (<><dt>หมวดหมู่</dt><dd><Link href={`/category/${p.category.slug}`}>{p.category.name}</Link></dd></>)}

@@ -54,7 +54,7 @@ button { font-family: inherit; }
 /* ---------- Hero ---------- */
 .hero { position: relative; background: var(--ink); color: var(--paper); overflow: hidden; display: flex; align-items: flex-end; touch-action: pan-y; }
 .hero-img { position: absolute !important; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 50% 0; }
-.hero-img.blur { filter: blur(9px) brightness(.55); transform: scale(1.06); transform-origin: 50% 0; }
+.hero-img.blur { filter: blur(4px) brightness(.55); transform: scale(1.06); transform-origin: 50% 0; }
 .hero-img.sharp { clip-path: circle(80px at 50% 12%); will-change: clip-path; }
 .hero-ring { position: absolute; left: 0; top: 0; width: 224px; height: 224px; margin: -112px 0 0 -112px; border-radius: 50%; border: 1.5px solid rgba(255,255,255,.85); box-shadow: 0 0 0 6px rgba(255,255,255,.08); transform: translate(62vw, 30svh); pointer-events: none; will-change: transform; }
 .hero-shade { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(20,19,19,0) 28%, rgba(20,19,19,.55) 45%, rgba(20,19,19,.94) 80%); pointer-events: none; }
@@ -238,9 +238,12 @@ button { font-family: inherit; }
 .g-nav { position: absolute; top: 50%; margin-top: -22px; width: 44px; height: 44px; border-radius: 50%; border: 0; background: rgba(247,246,244,.92); font-size: 18px; cursor: pointer; color: var(--ink); }
 .g-nav.prev { left: 8px; } .g-nav.next { right: 8px; }
 .g-nav:disabled { opacity: .35; cursor: default; }
-.g-dots { position: absolute; left: 0; right: 0; bottom: 10px; display: flex; justify-content: center; gap: 6px; }
-.g-dots button { width: 8px; height: 8px; border-radius: 999px; border: 0; padding: 0; background: rgba(20,19,19,.3); cursor: pointer; transition: width .25s ease; }
-.g-dots button.on { width: 22px; background: var(--ink); }
+.g-dots { position: absolute; left: 0; right: 0; bottom: 2px; display: flex; justify-content: center; gap: 0; }
+/* ปุ่มจุด: พื้นที่กด 24px (ตามเกณฑ์ touch target) แต่แสดงจุดเล็กเท่าเดิม */
+.g-dots button { position: relative; width: 24px; height: 24px; border: 0; padding: 0; background: transparent; cursor: pointer; }
+.g-dots button::after { content: ""; position: absolute; left: 50%; top: 50%; width: 8px; height: 8px; margin: -4px 0 0 -4px; border-radius: 999px; background: rgba(20,19,19,.3); transition: width .25s ease, margin .25s ease; }
+.g-dots button.on { width: 34px; }
+.g-dots button.on::after { width: 22px; margin-left: -11px; background: var(--ink); }
 .thumbs { display: flex; gap: 8px; overflow-x: auto; scrollbar-width: none; margin-top: 14px; }
 .thumbs button { flex: none; width: 56px; height: 56px; padding: 0; border-radius: 10px; overflow: hidden; border: 2px solid transparent; background: #efede9; cursor: pointer; position: relative; }
 .thumbs button.on { border-color: var(--ink); }
@@ -268,6 +271,22 @@ button { font-family: inherit; }
 .pd-meta dt { color: var(--muted-2); } .pd-meta dd { margin: 0; }
 .related { margin-top: 56px; }
 .related h2 { font-size: 22px; margin: 0 0 14px; }
+
+/* ---------- Branch pages ---------- */
+.bp-info { display: grid; gap: 12px; grid-template-columns: repeat(auto-fit, minmax(min(100%, 380px), 1fr)); align-items: stretch; }
+.bp-map { border-radius: 18px; overflow: hidden; background: #e8e6e2; min-height: 320px; border: 1px solid var(--line); }
+.bp-map iframe { width: 100%; height: 100%; min-height: 320px; border: 0; display: block; }
+.bp-section { margin-top: 48px; }
+.bp-h { margin: 0 0 16px; font-size: clamp(22px, 4.5vw, 32px); font-weight: 700; line-height: 1.2; }
+.bp-services { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; grid-template-columns: repeat(auto-fill, minmax(min(100%, 260px), 1fr)); }
+.bp-services li { background: #fff; border: 1px solid var(--line); border-radius: 14px; padding: 16px; display: grid; gap: 4px; }
+.bp-services b { font-weight: 600; }
+.bp-services span { color: var(--muted); font-size: 14px; line-height: 1.6; }
+.bp-other { display: grid; gap: 6px; background: var(--ink); color: var(--paper) !important; border-radius: 18px; padding: 24px 20px; }
+.bp-other .eyebrow { color: var(--dim); }
+.bp-other b { font-size: 20px; }
+.bp-other span { color: #cfcbc6; font-size: 14px; line-height: 1.6; }
+.bp-other .go { color: #fff; font-weight: 600; }
 
 /* ---------- Reveal ---------- */
 [data-reveal].pre { opacity: 0; transform: translateY(20px); }

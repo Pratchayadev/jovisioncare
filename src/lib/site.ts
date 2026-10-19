@@ -43,3 +43,24 @@ export function absoluteUrl(path: string) {
   if (/^https?:\/\//.test(path)) return path;
   return SITE_URL + (path.startsWith("/") ? path : "/" + path);
 }
+
+/** คำอธิบายสินค้า: ใช้ที่แอดมินเขียน ถ้าว่างจะสร้างให้ไม่ซ้ำกันจากแบรนด์ ชื่อรุ่น และหมวด (กัน Google มองเป็นเนื้อหาซ้ำ) */
+export function productDesc(p: { brand?: string | null; name: string; categoryName?: string | null; description?: string | null }) {
+  if (p.description?.trim()) return p.description.trim();
+  const isSun = (p.categoryName || "").includes("กันแดด");
+  const noun = isSun ? "แว่นกันแดด" : "กรอบแว่น";
+  const brand = p.brand ? ` ${p.brand}` : "";
+  const cat = p.categoryName && !isSun ? ` หมวด${p.categoryName}` : "";
+  return `${noun}${brand} รุ่น${p.name}${cat} ของแท้ จาก J.O. Vision Care ร้านแว่นอุดรธานีและหนองคาย ${
+    isSun ? "สอบถามรุ่น สี และราคาได้กับแอดมิน" : "พร้อมตรวจวัดสายตาและประกอบเลนส์ตามค่าสายตาของคุณ สอบถามสี ขนาด และราคาได้กับแอดมิน"
+  }`;
+}
+
+/** ตัดข้อความสำหรับ meta description โดยไม่ตัดกลางคำ/ตัวเลข */
+export function clip(text: string, max = 155) {
+  const t = text.replace(/\s+/g, " ").trim();
+  if (t.length <= max) return t;
+  const cut = t.slice(0, max);
+  const sp = cut.lastIndexOf(" ");
+  return (sp > max * 0.6 ? cut.slice(0, sp) : cut).replace(/[\s,·—-]+$/, "") + "…";
+}

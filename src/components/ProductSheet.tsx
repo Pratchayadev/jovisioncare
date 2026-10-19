@@ -3,7 +3,7 @@ import Link from "next/link";
 import { useEffect } from "react";
 import ProductGallery from "./ProductGallery";
 import AskButtons from "./AskButtons";
-import { defaultProductDesc } from "@/lib/site";
+import { productDesc } from "@/lib/site";
 import type { ProductCard } from "@/lib/queries";
 import type { Contact } from "@/lib/contact";
 
@@ -26,7 +26,7 @@ export default function ProductSheet({ p, c, onClose }: { p: ProductCard; c: Con
           <button type="button" className="icon-btn" aria-label="ปิด" onClick={onClose} autoFocus>✕</button>
         </div>
         <ProductGallery images={p.images} />
-        <p className="sheet-desc">{p.description || defaultProductDesc}</p>
+        <p className="sheet-desc">{productDesc(p)}</p>
         <AskButtons p={p} c={c} />
         <Link href={`/products/${p.slug}`} className="sheet-more">ดูรายละเอียดสินค้า →</Link>
       </div>

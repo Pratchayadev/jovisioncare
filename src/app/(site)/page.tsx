@@ -6,8 +6,9 @@ import Collection from "@/components/Collection";
 import JsonLd from "@/components/JsonLd";
 import { getBrands, getCategories, getPublishedProducts, getPublishedReviews, toCard } from "@/lib/queries";
 import IgPost from "@/components/IgPost";
-import { absoluteUrl, site, SITE_URL, storePhotos, storePhotosNongKhai } from "@/lib/site";
+import { site, SITE_URL, storePhotos, storePhotosNongKhai } from "@/lib/site";
 import { getBranches, getContact } from "@/lib/settings";
+import { opticianNode, organizationNode } from "@/lib/seo";
 import type { Metadata } from "next";
 
 export const revalidate = 3600;
@@ -29,29 +30,8 @@ export default async function Home() {
     "@context": "https://schema.org",
     "@graph": [
       { "@type": "WebSite", "@id": `${SITE_URL}/#website`, url: SITE_URL, name: site.name, inLanguage: "th-TH" },
-      ...branches.map((b, i) => ({
-        "@type": "Optician",
-        "@id": `${SITE_URL}/#branch-${i + 1}`,
-        name: `J.O. Vision Care สาขา${b.province}`,
-        alternateName: `ร้านแว่น${b.short} J.O. Vision Care`,
-        url: SITE_URL,
-        image: absoluteUrl(site.ogImage),
-        logo: absoluteUrl("/images/logo-og.jpg"),
-        address: {
-          "@type": "PostalAddress",
-          streetAddress: [b.line1, b.subdistrict && `ต.${b.subdistrict}`].filter(Boolean).join(" "),
-          addressLocality: b.district,
-          addressRegion: b.province,
-          postalCode: b.postalCode,
-          addressCountry: "TH",
-        },
-        geo: { "@type": "GeoCoordinates", latitude: b.lat, longitude: b.lng },
-        hasMap: b.mapView,
-        openingHoursSpecification: [{ "@type": "OpeningHoursSpecification", dayOfWeek: b.days, opens: b.opens, closes: b.closes }],
-        ...(c.phoneIntl ? { telephone: c.phoneIntl } : {}),
-        sameAs: [c[b.fbKey], c.ig, c.tiktok],
-        priceRange: "฿฿",
-      })),
+      organizationNode(c),
+      ...branches.map((b) => opticianNode(b, c)),
     ],
   };
 
@@ -160,6 +140,7 @@ export default async function Home() {
               <div className="row-btns">
                 <a href={b.map} target="_blank" rel="noopener" className="pill solid">นำทาง Google Maps</a>
                 <a href={c[b.fbKey]} target="_blank" rel="noopener" className="pill">เพจ Facebook</a>
+                <Link href={b.path} className="pill">ข้อมูลสาขา →</Link>
               </div>
             </article>
           ))}

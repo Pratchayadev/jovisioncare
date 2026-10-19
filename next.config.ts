@@ -8,7 +8,9 @@ const nextConfig: NextConfig = {
     formats: ["image/avif", "image/webp"],
     remotePatterns: r2 ? [{ protocol: r2.protocol.replace(":", "") as "https", hostname: r2.hostname }] : [],
   },
-  experimental: { serverActions: { bodySizeLimit: "4mb" /* Vercel รับได้สูงสุด 4.5MB — ฟอร์มย่อรูปในเบราว์เซอร์ก่อนส่ง */ } },
+  experimental: {
+    inlineCss: true, // ฝัง CSS ใน HTML — ไม่มีไฟล์ CSS ที่บล็อกการแสดงผล
+    serverActions: { bodySizeLimit: "4mb" /* Vercel รับได้สูงสุด 4.5MB — ฟอร์มย่อรูปในเบราว์เซอร์ก่อนส่ง */ } },
 };
 
 export default nextConfig;

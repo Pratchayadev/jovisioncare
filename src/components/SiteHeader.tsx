@@ -4,10 +4,10 @@ export default function SiteHeader({ hasReviews = false }: { hasReviews?: boolea
   return (
     <header className="site-header">
       <div className="wrap bar">
-        <Link href="/" className="logo" aria-label="J.O. Vision Care หน้าแรก">
+        <Link href="/" className="logo" title="J.O. Vision Care หน้าแรก">
           <span className="logo-mark">
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/icon.png" alt="" width={40} height={40} style={{ position: "static", width: 40, height: 40 }} />
+            <img src="/images/logo-96.png" alt="" width={40} height={40} style={{ position: "static", width: 40, height: 40 }} />
           </span>
           <span className="logo-word">J.O. VISIONCARE</span>
         </Link>
@@ -21,7 +21,8 @@ export default function SiteHeader({ hasReviews = false }: { hasReviews?: boolea
         <Link href="/#lens-lab">ทดลองเลนส์</Link>
         <Link href="/#store">บรรยากาศร้าน</Link>
         {hasReviews && <Link href="/#reviews">รีวิวจาก IG</Link>}
-        <Link href="/#branches">อุดร · หนองคาย</Link>
+        <Link href="/udon-thani">ร้านแว่นอุดร</Link>
+        <Link href="/nong-khai">ร้านแว่นหนองคาย</Link>
       </nav>
     </header>
   );

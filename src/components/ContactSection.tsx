@@ -22,6 +22,8 @@ export default function ContactSection({ categories, brands, c }: { categories: 
         </div>
         <footer className="site-footer">
           <nav aria-label="หมวดสินค้า">
+            <Link href="/udon-thani">ร้านแว่นอุดร</Link>
+            <Link href="/nong-khai">ร้านแว่นหนองคาย</Link>
             <Link href="/products">สินค้าทั้งหมด</Link>
             {categories.map((c) => (
               <Link key={c.id} href={`/category/${c.slug}`}>{c.name}</Link>

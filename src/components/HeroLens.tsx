@@ -12,20 +12,24 @@ export default function HeroLens({ effect = true }: { effect?: boolean }) {
   useEffect(() => {
     const hero = heroRef.current;
     if (!hero || !effect) return;
-    let raf = 0, pend = false, touched = false, visible = true;
+    let raf = 0, pend = false, touched = false, visible = true, started = false;
+    let w = hero.clientWidth, h = hero.clientHeight;
     const t0 = performance.now();
+    // เก็บขนาดไว้ ไม่ต้องอ่าน layout ทุกเฟรม (ลด forced reflow)
+    const ro = new ResizeObserver(([e]) => { w = e.contentRect.width; h = e.contentRect.height; });
+    ro.observe(hero);
 
     const setLens = (x: number, y: number) => {
-      const rad = Math.max(70, Math.min(130, hero.clientWidth * 0.15));
+      const rad = Math.max(70, Math.min(130, w * 0.15));
       if (sharpRef.current) sharpRef.current.style.clipPath = `circle(${rad}px at ${x}px ${y}px)`;
       const s = ringRef.current?.style;
       if (s) { s.width = s.height = rad * 2 + "px"; s.margin = `${-rad}px 0 0 ${-rad}px`; s.transform = `translate(${x}px,${y}px)`; }
     };
     const loop = () => {
       cancelAnimationFrame(raf);
-      if (touched || !visible) return;
+      if (touched || !visible || !started) return;
       const t = (performance.now() - t0) / 1000;
-      const w = hero.clientWidth, ih = Math.max(hero.clientHeight, w * 0.75) * 1.06;
+      const ih = Math.max(h, w * 0.75) * 1.06;
       setLens(w * (0.5 + Math.sin(t * 0.45) * 0.32), ih * 0.08 + Math.sin(t * 0.9) * 8);
       raf = requestAnimationFrame(loop);
     };
@@ -40,15 +44,27 @@ export default function HeroLens({ effect = true }: { effect?: boolean }) {
     io.observe(hero);
     hero.addEventListener("pointermove", onMove);
     hero.addEventListener("pointerdown", onMove);
-    if (matchMedia("(prefers-reduced-motion: reduce)").matches) { touched = true; setLens(hero.clientWidth * 0.5, hero.clientHeight * 0.1); } else loop();
-    return () => { cancelAnimationFrame(raf); io.disconnect(); hero.removeEventListener("pointermove", onMove); hero.removeEventListener("pointerdown", onMove); };
+    // เริ่มแอนิเมชันหลังหน้าโหลดเสร็จ ไม่แย่งเวลากับการแสดงผลครั้งแรก (LCP)
+    const ric = (window as unknown as { requestIdleCallback?: (cb: () => void, o?: { timeout: number }) => number }).requestIdleCallback;
+    const start = () => {
+      started = true;
+      if (matchMedia("(prefers-reduced-motion: reduce)").matches) { touched = true; setLens(w * 0.5, h * 0.1); } else loop();
+    };
+    const idle = ric ? ric(start, { timeout: 2000 }) : window.setTimeout(start, 1200);
+    return () => {
+      cancelAnimationFrame(raf); io.disconnect(); ro.disconnect();
+      if (!ric) clearTimeout(idle);
+      hero.removeEventListener("pointermove", onMove); hero.removeEventListener("pointerdown", onMove);
+    };
   }, [effect]);
 
   return (
     <section ref={heroRef} className="hero" aria-labelledby="hero-title">
-      <Image src="/images/store.jpg" alt="หน้าร้าน J.O. Vision Care ร้านแว่นอุดร" fill priority sizes="100vw" className="hero-img blur" />
+      {/* พื้นหลังเบลอใช้รูปเล็ก (~10KB) ที่เบลอไว้แล้ว — โหลดเร็ว ไม่ต้องให้เบราว์เซอร์เบลอรูปใหญ่ */}
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img src="/images/store-blur.jpg" alt="หน้าร้าน J.O. Vision Care ร้านแว่นอุดร" width={480} height={360} fetchPriority="high" decoding="async" className="hero-img blur" />
       <div ref={sharpRef} aria-hidden="true" style={{ position: "absolute", inset: 0, clipPath: "circle(80px at 50% 12%)", willChange: "clip-path" }}>
-        <Image src="/images/store.jpg" alt="" fill priority sizes="100vw" className="hero-img" />
+        <Image src="/images/store.jpg" alt="" fill loading="eager" sizes="100vw" className="hero-img" />
       </div>
       {effect && <div ref={ringRef} className="hero-ring" aria-hidden="true" />}
       <div className="hero-shade" />

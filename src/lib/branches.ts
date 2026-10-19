@@ -27,8 +27,8 @@ export type BranchSettings = {
 
 /** ส่วนที่คงที่ (ผูกกับดีไซน์และ SEO) */
 const STATIC = {
-  udon: { id: "udon" as const, en: "UDON THANI", h: "ร้านแว่นอุดร — สาขาอุดรธานี", short: "อุดร", fbKey: "fbUdon" as const },
-  nongkhai: { id: "nongkhai" as const, en: "NONG KHAI", h: "ร้านแว่นหนองคาย — สาขาหนองคาย", short: "หนองคาย", fbKey: "fbNongkhai" as const },
+  udon: { id: "udon" as const, path: "/udon-thani", en: "UDON THANI", h: "ร้านแว่นอุดร — สาขาอุดรธานี", short: "อุดร", fbKey: "fbUdon" as const },
+  nongkhai: { id: "nongkhai" as const, path: "/nong-khai", en: "NONG KHAI", h: "ร้านแว่นหนองคาย — สาขาหนองคาย", short: "หนองคาย", fbKey: "fbNongkhai" as const },
 };
 
 const ALL_DAYS = DAYS.map(([d]) => d) as Day[];
