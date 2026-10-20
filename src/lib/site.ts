@@ -5,11 +5,11 @@ export const SITE_URL = (process.env.SITE_URL || (vercelHost ? `https://${vercel
 
 export const site = {
   name: "J.O. Vision Care",
-  title: "ร้านแว่นอุดร หนองคาย | J.O. Vision Care ตรวจวัดสายตา ตัดแว่น",
+  title: "ร้านแว่นอุดร หนองคาย | J.O. Vision Care ตรวจวัดสายตาฟรี ตัดแว่น",
   description:
-    "J.O. Vision Care ร้านแว่นตาอุดรธานีและหนองคาย ตรวจวัดสายตาละเอียด ตัดแว่น เลนส์กรองแสงสีฟ้า เลนส์ออโต้ แว่นกันแดดแบรนด์แท้ Bolon Helen Keller ทักแอดมินได้ทาง LINE, Facebook, IG",
+    "J.O. Vision Care ร้านแว่นตาอุดรธานีและหนองคาย ตรวจวัดสายตาฟรี ตัดแว่น เลนส์กรองแสงสีฟ้า เลนส์ออโต้ แว่นกันแดดแบรนด์แท้ Bolon Helen Keller ทักแอดมินได้ทาง LINE, Facebook, IG",
   ogTitle: "J.O. Vision Care — ร้านแว่นอุดร · ร้านแว่นหนองคาย",
-  ogDescription: "ตรวจวัดสายตา ตัดแว่น เลนส์คุณภาพ กรอบแบรนด์แท้ 2 สาขา อุดรธานี และหนองคาย",
+  ogDescription: "ตรวจวัดสายตาฟรี ตัดแว่น เลนส์คุณภาพ กรอบแบรนด์แท้ 2 สาขา อุดรธานี และหนองคาย",
   ogImage: "/images/store.jpg",
   promo: { label: "กรอบแว่นพร้อมเลนส์กรองแสงสีฟ้า ราคาเดียว", price: "1,700 บาท" },
 };

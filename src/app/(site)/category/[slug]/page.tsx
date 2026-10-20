@@ -12,7 +12,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const c = await getCategoryBySlug(decodeURIComponent((await params).slug));
   if (!c) return {};
   const title = c.metaTitle || `${c.name} แบรนด์แท้ ร้านแว่นอุดร หนองคาย`;
-  const description = c.metaDescription || c.description || `${c.name} แบรนด์แท้ที่ J.O. Vision Care ร้านแว่นอุดรและหนองคาย ตรวจวัดสายตา ตัดแว่น ทักแอดมินได้ทุกช่องทาง`;
+  const description = c.metaDescription || c.description || `${c.name} แบรนด์แท้ที่ J.O. Vision Care ร้านแว่นอุดรและหนองคาย ตรวจวัดสายตาฟรี ทักแอดมินได้ทุกช่องทาง`;
   return { title, description, alternates: { canonical: `/category/${c.slug}` }, openGraph: { title, description, url: `/category/${c.slug}` } };
 }
 

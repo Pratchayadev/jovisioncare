@@ -25,8 +25,8 @@ async function load(id: BranchId) {
 
 export async function branchMetadata(id: BranchId): Promise<Metadata> {
   const [{ b }, c] = await Promise.all([load(id), getContact()]);
-  const title = `ร้านแว่น${b.short} ตรวจวัดสายตา ตัดแว่น — ${b.place} | J.O. Vision Care`;
-  const description = clip(`ร้านแว่น${b.short} J.O. Vision Care ${b.place} ${b.daysLabel} ${b.hours}${c.phone ? ` โทร ${c.phone}` : ""} ตรวจวัดสายตา ตัดแว่น เลนส์กรองแสงสีฟ้า เลนส์ออโต้ กรอบแว่นแบรนด์แท้ ${b.addr}`);
+  const title = `ร้านแว่น${b.short} ตรวจวัดสายตาฟรี ตัดแว่น — ${b.place} | J.O. Vision Care`;
+  const description = clip(`ร้านแว่น${b.short} J.O. Vision Care ${b.place} ${b.daysLabel} ${b.hours}${c.phone ? ` โทร ${c.phone}` : ""} ตรวจวัดสายตาฟรี ตัดแว่น เลนส์กรองแสงสีฟ้า เลนส์ออโต้ กรอบแว่นแบรนด์แท้ ${b.addr}`);
   const img = PHOTOS[id][0]?.src;
   return {
     title: { absolute: title },
@@ -52,7 +52,7 @@ export default async function BranchPage({ id }: { id: BranchId }) {
         <p className="eyebrow">BRANCH — {b.en}</p>
         <h1 className="h2">ร้านแว่น{b.short} J.O. Vision Care สาขา{b.province}</h1>
         <p className="lead">
-          J.O. Vision Care สาขา{b.province} ตั้งอยู่ที่{b.place} {b.daysLabel} {b.hours} บริการตรวจวัดสายตาอย่างละเอียด ตัดแว่นสายตา
+          J.O. Vision Care สาขา{b.province} ตั้งอยู่ที่{b.place} {b.daysLabel} {b.hours} บริการตรวจวัดสายตาฟรีอย่างละเอียด ตัดแว่นสายตา
           เลนส์กรองแสงสีฟ้า เลนส์ออโต้ และกรอบแว่นแบรนด์แท้ ทักแอดมินหรือแวะมาที่ร้านได้เลย
         </p>
       </div>
