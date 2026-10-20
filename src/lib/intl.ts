@@ -4,9 +4,14 @@ import type { Day } from "./branches";
 
 export type Lang = "lo" | "en";
 export const LANGS: Lang[] = ["lo", "en"];
-export const intlPath = (l: Lang) => `/${l}/nong-khai`;
-/** hreflang ของหน้าสาขาหนองคาย ทั้ง 3 ภาษา */
-export const NONGKHAI_LANGUAGES = { th: "/nong-khai", lo: "/lo/nong-khai", en: "/en/nong-khai", "x-default": "/nong-khai" };
+export type IntlBranch = "udon" | "nongkhai";
+const BRANCH_PATH: Record<IntlBranch, string> = { udon: "/udon-thani", nongkhai: "/nong-khai" };
+export const intlPath = (l: Lang, id: IntlBranch) => `/${l}${BRANCH_PATH[id]}`;
+/** hreflang ของหน้าสาขา ทั้ง 3 ภาษา */
+export const branchLanguages = (id: IntlBranch) => {
+  const p = BRANCH_PATH[id];
+  return { th: p, lo: `/lo${p}`, en: `/en${p}`, "x-default": p };
+};
 
 const DAY_NAMES: Record<Lang, Record<Day, string>> = {
   en: { Monday: "Mon", Tuesday: "Tue", Wednesday: "Wed", Thursday: "Thu", Friday: "Fri", Saturday: "Sat", Sunday: "Sun" },
@@ -25,12 +30,6 @@ export const T = {
     htmlLang: "en",
     ogLocale: "en_US",
     langName: "English",
-    title: "Optical Shop in Nong Khai — Free Eye Test & Glasses",
-    description: (hours: string, phone: string) =>
-      `J.O. Vision Care Nong Khai: free eye test, prescription glasses ready in 1–7 days, genuine brand frames and sunglasses. Asawann 1 shopping complex, open daily ${hours}. Call ${phone}.`,
-    eyebrow: "NONG KHAI BRANCH",
-    h1: "J.O. Vision Care — Optical Shop in Nong Khai",
-    lead: "Free eye tests, prescription glasses and genuine brand frames in Nong Khai. Many of our customers come from Laos — you are very welcome here.",
     whyTitle: "Why J.O. Vision Care",
     strengths: [
       ["Free eye test", "At both of our branches"],
@@ -40,8 +39,6 @@ export const T = {
       ["Glasses ready in 1–7 days", "Depending on the lenses and your prescription"],
     ] as [string, string][],
     visitTitle: "Address & opening hours",
-    place: "Asawann Shopping Complex 1 (Lotus side), next to KFC",
-    area: "Mi Chai, Mueang Nong Khai, Nong Khai 43000, Thailand",
     addrLabel: "Address",
     thaiAddr: "Address in Thai (for GPS or taxi)",
     hoursLabel: "Opening hours",
@@ -89,12 +86,6 @@ export const T = {
     htmlLang: "lo",
     ogLocale: "lo_LA",
     langName: "ພາສາລາວ",
-    title: "ຮ້ານແວ່ນຕາ ໜອງຄາຍ ກວດສາຍຕາຟຣີ ຕັດແວ່ນ",
-    description: (hours: string, phone: string) =>
-      `J.O. Vision Care ສາຂາໜອງຄາຍ ກວດສາຍຕາຟຣີ ຕັດແວ່ນສາຍຕາ ຮັບແວ່ນພາຍໃນ 1–7 ມື້ ກອບແວ່ນ ແລະ ແວ່ນກັນແດດແບຣນແທ້ ຢູ່ຫ້າງອັດສະວັນ 1 ເປີດທຸກມື້ ${hours} ໂທ ${phone}`,
-    eyebrow: "ສາຂາໜອງຄາຍ",
-    h1: "J.O. Vision Care ຮ້ານແວ່ນຕາ ສາຂາໜອງຄາຍ",
-    lead: "ກວດສາຍຕາຟຣີ ຕັດແວ່ນສາຍຕາ ແລະ ກອບແວ່ນແບຣນແທ້ ທີ່ໜອງຄາຍ. ລູກຄ້າຂອງພວກເຮົາຫຼາຍທ່ານມາຈາກລາວ — ຍິນດີຕ້ອນຮັບ ແລະ ຍິນດີໃຫ້ຄຳແນະນຳ.",
     whyTitle: "ເປັນຫຍັງຕ້ອງ J.O. Vision Care",
     strengths: [
       ["ກວດສາຍຕາຟຣີ", "ທັງສອງສາຂາ"],
@@ -104,8 +95,6 @@ export const T = {
       ["ຮັບແວ່ນພາຍໃນ 1–7 ມື້", "ຂຶ້ນກັບລາຍລະອຽດຂອງວຽກ ແລະ ຊະນິດເລນ"],
     ] as [string, string][],
     visitTitle: "ທີ່ຢູ່ ແລະ ເວລາເປີດ",
-    place: "ຫ້າງອັດສະວັນ 1 (ຝັ່ງໂລຕັສ) ຂ້າງ KFC",
-    area: "ຕາແສງມີໄຊ, ເມືອງໜອງຄາຍ, ແຂວງໜອງຄາຍ 43000, ປະເທດໄທ",
     addrLabel: "ທີ່ຢູ່",
     thaiAddr: "ທີ່ຢູ່ພາສາໄທ (ສຳລັບ GPS ຫຼື ລົດແທັກຊີ)",
     hoursLabel: "ເວລາເປີດ",
@@ -150,3 +139,47 @@ export const T = {
     },
   },
 } as const;
+
+/** ข้อความที่ต่างกันตามสาขา */
+export const BT: Record<Lang, Record<IntlBranch, { title: string; description: (days: string, hours: string, phone: string) => string; eyebrow: string; h1: string; lead: string; place: string; area: string }>> = {
+  en: {
+    nongkhai: {
+      title: "Optical Shop in Nong Khai — Free Eye Test & Glasses",
+      description: (days, hours, phone) => `J.O. Vision Care Nong Khai: free eye test, prescription glasses ready in 1–7 days, genuine brand frames and sunglasses. Asawann 1 shopping complex, ${days.toLowerCase()} ${hours}. Call ${phone}.`,
+      eyebrow: "NONG KHAI BRANCH",
+      h1: "J.O. Vision Care — Optical Shop in Nong Khai",
+      lead: "Free eye tests, prescription glasses and genuine brand frames in Nong Khai. Many of our customers come from Laos — you are very welcome here.",
+      place: "Asawann Shopping Complex 1 (Lotus side), next to KFC",
+      area: "Mi Chai, Mueang Nong Khai, Nong Khai 43000, Thailand",
+    },
+    udon: {
+      title: "Optical Shop in Udon Thani — Free Eye Test & Glasses",
+      description: (days, hours, phone) => `J.O. Vision Care Udon Thani: free eye test, prescription glasses ready in 1–7 days, genuine brand frames and sunglasses. Charoensri Park by Nong Prajak, ${days.toLowerCase()} ${hours}. Call ${phone}.`,
+      eyebrow: "UDON THANI BRANCH",
+      h1: "J.O. Vision Care — Optical Shop in Udon Thani",
+      lead: "Free eye tests, prescription glasses and genuine brand frames in Udon Thani, by Nong Prajak lake. Visitors from Laos and other countries are very welcome.",
+      place: "Room B04, Charoensri Park, by Nong Prajak, Ban Non Road Soi 1",
+      area: "Mueang Udon Thani, Udon Thani 41000, Thailand",
+    },
+  },
+  lo: {
+    nongkhai: {
+      title: "ຮ້ານແວ່ນຕາ ໜອງຄາຍ ກວດສາຍຕາຟຣີ ຕັດແວ່ນ",
+      description: (days, hours, phone) => `J.O. Vision Care ສາຂາໜອງຄາຍ ກວດສາຍຕາຟຣີ ຕັດແວ່ນສາຍຕາ ຮັບແວ່ນພາຍໃນ 1–7 ມື້ ກອບແວ່ນ ແລະ ແວ່ນກັນແດດແບຣນແທ້ ຢູ່ຫ້າງອັດສະວັນ 1 ${days} ${hours} ໂທ ${phone}`,
+      eyebrow: "ສາຂາໜອງຄາຍ",
+      h1: "J.O. Vision Care ຮ້ານແວ່ນຕາ ສາຂາໜອງຄາຍ",
+      lead: "ກວດສາຍຕາຟຣີ ຕັດແວ່ນສາຍຕາ ແລະ ກອບແວ່ນແບຣນແທ້ ທີ່ໜອງຄາຍ. ລູກຄ້າຂອງພວກເຮົາຫຼາຍທ່ານມາຈາກລາວ — ຍິນດີຕ້ອນຮັບ ແລະ ຍິນດີໃຫ້ຄຳແນະນຳ.",
+      place: "ຫ້າງອັດສະວັນ 1 (ຝັ່ງໂລຕັສ) ຂ້າງ KFC",
+      area: "ຕາແສງມີໄຊ, ເມືອງໜອງຄາຍ, ແຂວງໜອງຄາຍ 43000, ປະເທດໄທ",
+    },
+    udon: {
+      title: "ຮ້ານແວ່ນຕາ ອຸດອນທານີ ກວດສາຍຕາຟຣີ ຕັດແວ່ນ",
+      description: (days, hours, phone) => `J.O. Vision Care ສາຂາອຸດອນທານີ ກວດສາຍຕາຟຣີ ຕັດແວ່ນສາຍຕາ ຮັບແວ່ນພາຍໃນ 1–7 ມື້ ກອບແວ່ນ ແລະ ແວ່ນກັນແດດແບຣນແທ້ ຢູ່ເຈລິນສີປາກ ແຄມໜອງປະຈັກ ${days} ${hours} ໂທ ${phone}`,
+      eyebrow: "ສາຂາອຸດອນທານີ",
+      h1: "J.O. Vision Care ຮ້ານແວ່ນຕາ ສາຂາອຸດອນທານີ",
+      lead: "ກວດສາຍຕາຟຣີ ຕັດແວ່ນສາຍຕາ ແລະ ກອບແວ່ນແບຣນແທ້ ທີ່ອຸດອນທານີ ແຄມໜອງປະຈັກ. ຍິນດີຕ້ອນຮັບລູກຄ້າຈາກລາວ ແລະ ຕ່າງປະເທດ.",
+      place: "ຫ້ອງ B04 ໂຄງການເຈລິນສີປາກ ແຄມໜອງປະຈັກ ຖະໜົນບ້ານໂນນ ຊອຍ 1",
+      area: "ເມືອງອຸດອນທານີ, ແຂວງອຸດອນທານີ 41000, ປະເທດໄທ",
+    },
+  },
+};

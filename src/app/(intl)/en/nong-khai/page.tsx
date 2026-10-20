@@ -1,7 +1,7 @@
 import IntlBranchPage, { intlMetadata } from "@/components/IntlBranchPage";
 
 export const revalidate = 3600;
-export const generateMetadata = () => intlMetadata("en");
+export const generateMetadata = () => intlMetadata("en", "nongkhai");
 export default function Page() {
-  return <IntlBranchPage lang="en" />;
+  return <IntlBranchPage lang="en" branch="nongkhai" />;
 }

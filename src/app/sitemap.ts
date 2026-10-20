@@ -16,13 +16,14 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const abs = (u: string) => (u.startsWith("http") ? u : SITE_URL + u);
   return [
     { url: SITE_URL + "/", changeFrequency: "weekly", priority: 1 },
-    { url: SITE_URL + "/udon-thani", changeFrequency: "monthly", priority: 0.9 },
-    ...(["/nong-khai", "/lo/nong-khai", "/en/nong-khai"] as const).map((p) => ({
-      url: SITE_URL + p,
-      changeFrequency: "monthly" as const,
-      priority: p === "/nong-khai" ? 0.9 : 0.8,
-      alternates: { languages: { th: SITE_URL + "/nong-khai", lo: SITE_URL + "/lo/nong-khai", en: SITE_URL + "/en/nong-khai" } },
-    })),
+    ...(["/udon-thani", "/nong-khai"] as const).flatMap((base) =>
+      ["", "/lo", "/en"].map((pre) => ({
+        url: SITE_URL + pre + base,
+        changeFrequency: "monthly" as const,
+        priority: pre ? 0.8 : 0.9,
+        alternates: { languages: { th: SITE_URL + base, lo: SITE_URL + "/lo" + base, en: SITE_URL + "/en" + base } },
+      })),
+    ),
     { url: SITE_URL + "/products", changeFrequency: "weekly", priority: 0.8 },
     { url: SITE_URL + "/brands", changeFrequency: "monthly", priority: 0.7 },
     { url: SITE_URL + "/services", changeFrequency: "monthly", priority: 0.8 },
