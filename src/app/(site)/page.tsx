@@ -7,7 +7,7 @@ import JsonLd from "@/components/JsonLd";
 import { getBrands, getCategories, getPublishedArticles, getPublishedProducts, getPublishedReviews, toCard } from "@/lib/queries";
 import ArticleCard from "@/components/ArticleCard";
 import IgPost from "@/components/IgPost";
-import { site, SITE_URL, storePhotos, storePhotosNongKhai } from "@/lib/site";
+import { shareMeta, site, SITE_URL, storePhotos, storePhotosNongKhai } from "@/lib/site";
 import { getBranches, getContact } from "@/lib/settings";
 import { opticianNode, organizationNode } from "@/lib/seo";
 import type { Metadata } from "next";
@@ -17,8 +17,7 @@ export const revalidate = 3600;
 export const metadata: Metadata = {
   title: { absolute: site.title },
   alternates: { canonical: "/" },
-  openGraph: { type: "website", locale: "th_TH", siteName: site.name, title: site.ogTitle, description: site.ogDescription, url: "/", images: [{ url: site.ogImage, width: 2048, height: 1536, alt: "หน้าร้าน J.O. Vision Care" }] },
-  twitter: { card: "summary_large_image", title: site.ogTitle, description: site.ogDescription, images: [site.ogImage] },
+  ...shareMeta({ title: site.ogTitle, description: site.ogDescription, url: "/" }),
 };
 
 export default async function Home() {
@@ -30,7 +29,7 @@ export default async function Home() {
   const jsonLd = {
     "@context": "https://schema.org",
     "@graph": [
-      { "@type": "WebSite", "@id": `${SITE_URL}/#website`, url: SITE_URL, name: site.name, inLanguage: "th-TH" },
+      { "@type": "WebSite", "@id": `${SITE_URL}/#website`, url: SITE_URL, name: site.name, alternateName: ["JO Vision Care", "เจ.โอ.วิชั่นแคร์", "jovisioncare"], inLanguage: "th-TH" },
       organizationNode(c),
       ...branches.map((b) => opticianNode(b, c)),
     ],

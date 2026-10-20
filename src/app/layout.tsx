@@ -1,6 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import "./fonts.css";
-import { SITE_URL, site } from "@/lib/site";
+import { SITE_URL, site, shareMeta } from "@/lib/site";
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
@@ -9,6 +9,7 @@ export const metadata: Metadata = {
   applicationName: site.name,
   icons: { icon: [{ url: "/icon-192.png", type: "image/png", sizes: "192x192" }], apple: "/apple-icon.png" },
   formatDetection: { telephone: true },
+  ...shareMeta({ title: site.ogTitle, description: site.ogDescription, url: "/" }),
 };
 
 export const viewport: Viewport = {

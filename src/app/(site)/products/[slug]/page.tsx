@@ -7,7 +7,7 @@ import AskButtons from "@/components/AskButtons";
 import TrackView from "@/components/TrackView";
 import JsonLd from "@/components/JsonLd";
 import { getProductBySlug, getRelatedProducts, toCard } from "@/lib/queries";
-import { absoluteUrl, clip, productDesc, site } from "@/lib/site";
+import { absoluteUrl, clip, productDesc, site, shareMeta } from "@/lib/site";
 import { getContact } from "@/lib/settings";
 
 export const revalidate = 3600;
@@ -25,7 +25,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     title,
     description,
     alternates: { canonical: `/products/${p.slug}` },
-    openGraph: { type: "website", title, description, url: `/products/${p.slug}`, images: img ? [{ url: img, alt: `${brand} ${p.name}` }] : undefined },
+    ...shareMeta({ title, description, url: `/products/${p.slug}`, image: img ? { url: img, alt: `${brand} ${p.name}` } : null }),
   };
 }
 

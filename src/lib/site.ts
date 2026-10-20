@@ -64,3 +64,26 @@ export function clip(text: string, max = 155) {
   const sp = cut.lastIndexOf(" ");
   return (sp > max * 0.6 ? cut.slice(0, sp) : cut).replace(/[\s,·—-]+$/, "") + "…";
 }
+
+/* ---------- ภาพตอนแชร์ลิงก์ (Facebook, LINE, Messenger, IG) ---------- */
+export type ShareImage = { url: string; width?: number; height?: number; alt?: string };
+export const OG_DEFAULT: ShareImage = { url: "/og/default.jpg", width: 1200, height: 630, alt: "หน้าร้าน J.O. Vision Care" };
+export const OG_NONGKHAI: ShareImage = { url: "/og/nong-khai.jpg", width: 1200, height: 630, alt: "ตรวจวัดสายตาที่ J.O. Vision Care สาขาหนองคาย" };
+
+/** openGraph + twitter ครบชุด — ระบุขนาดรูปเสมอ เพื่อให้ Facebook/Messenger แสดงรูปตั้งแต่แชร์ครั้งแรก */
+export function shareMeta(o: { title: string; description?: string; url: string; image?: ShareImage | null; type?: "website" | "article"; publishedTime?: string; modifiedTime?: string }) {
+  const images = o.image ? [o.image, OG_DEFAULT] : [OG_DEFAULT];
+  return {
+    openGraph: {
+      type: o.type ?? "website",
+      siteName: site.name,
+      locale: "th_TH",
+      title: o.title,
+      description: o.description,
+      url: o.url,
+      images,
+      ...(o.type === "article" ? { publishedTime: o.publishedTime, modifiedTime: o.modifiedTime } : {}),
+    },
+    twitter: { card: "summary_large_image" as const, title: o.title, description: o.description, images: [images[0].url] },
+  };
+}

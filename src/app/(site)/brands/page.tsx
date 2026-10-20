@@ -3,7 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 import JsonLd from "@/components/JsonLd";
 import { getBrandsWithCounts } from "@/lib/queries";
-import { absoluteUrl, clip, SITE_URL } from "@/lib/site";
+import { absoluteUrl, clip, SITE_URL, shareMeta } from "@/lib/site";
 import { breadcrumbNode } from "@/lib/seo";
 
 export const revalidate = 3600;
@@ -12,7 +12,7 @@ export const metadata: Metadata = {
   title: "แบรนด์แว่นแท้ทั้งหมด กรอบแว่นแบรนด์เนม อุดร หนองคาย",
   description: "รวมแบรนด์กรอบแว่นและแว่นกันแดดของแท้ที่ J.O. Vision Care สาขาอุดรธานีและหนองคาย ดูรุ่นที่มีในร้าน แล้วแวะมาลองหรือทักถามแอดมินได้",
   alternates: { canonical: "/brands" },
-  openGraph: { title: "แบรนด์แว่นแท้ทั้งหมด | J.O. Vision Care", url: "/brands" },
+  ...shareMeta({ title: "แบรนด์แว่นแท้ทั้งหมด กรอบแว่นแบรนด์เนม อุดร หนองคาย", description: "รวมแบรนด์กรอบแว่นและแว่นกันแดดของแท้ที่ J.O. Vision Care สาขาอุดรธานีและหนองคาย ดูรุ่นที่มีในร้าน แล้วแวะมาลองหรือทักถามแอดมินได้", url: "/brands" }),
 };
 
 export default async function BrandsPage() {

@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { shareMeta } from "@/lib/site";
 import { redirectOrNotFound } from "@/lib/redirects";
 import { parseFaq } from "@/lib/faq";
 import ListingPage from "@/components/ListingPage";
@@ -13,7 +14,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   if (!c) return {};
   const title = c.metaTitle || `${c.name} แบรนด์แท้ ร้านแว่นอุดร หนองคาย`;
   const description = c.metaDescription || c.description || `${c.name} แบรนด์แท้ที่ J.O. Vision Care ร้านแว่นอุดรและหนองคาย ตรวจวัดสายตาฟรี ทักแอดมินได้ทุกช่องทาง`;
-  return { title, description, alternates: { canonical: `/category/${c.slug}` }, openGraph: { title, description, url: `/category/${c.slug}` } };
+  return { title, description, alternates: { canonical: `/category/${c.slug}` }, ...shareMeta({ title, description, url: `/category/${c.slug}` }) };
 }
 
 export default async function CategoryPage({ params }: Props) {

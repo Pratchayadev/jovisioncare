@@ -3,7 +3,7 @@ import Link from "next/link";
 import ArticleCard from "@/components/ArticleCard";
 import JsonLd from "@/components/JsonLd";
 import { getPublishedArticles } from "@/lib/queries";
-import { absoluteUrl, SITE_URL } from "@/lib/site";
+import { absoluteUrl, SITE_URL, shareMeta } from "@/lib/site";
 import { breadcrumbNode } from "@/lib/seo";
 
 export const revalidate = 3600;
@@ -12,6 +12,7 @@ export const metadata: Metadata = {
   title: "บทความเรื่องแว่นตาและสุขภาพสายตา",
   description: "ความรู้เรื่องแว่นตา เลนส์ และการดูแลสายตา จากร้านแว่น J.O. Vision Care อุดรธานีและหนองคาย",
   alternates: { canonical: "/articles" },
+  ...shareMeta({ title: "บทความเรื่องแว่นตาและสุขภาพสายตา", description: "ความรู้เรื่องแว่นตา เลนส์ และการดูแลสายตา จากร้านแว่น J.O. Vision Care อุดรธานีและหนองคาย", url: "/articles" }),
 };
 
 export default async function ArticlesPage() {

@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { shareMeta } from "@/lib/site";
 import ListingPage from "@/components/ListingPage";
 import { getCategories, getPublishedProducts, toCard } from "@/lib/queries";
 
@@ -7,6 +8,7 @@ export const metadata: Metadata = {
   title: "กรอบแว่นและแว่นกันแดดแบรนด์แท้ทั้งหมด",
   description: "รวมกรอบแว่นสายตาและแว่นกันแดดแบรนด์แท้ที่ J.O. Vision Care ร้านแว่นอุดร หนองคาย พร้อมบริการตรวจวัดสายตาและประกอบเลนส์",
   alternates: { canonical: "/products" },
+  ...shareMeta({ title: "กรอบแว่นและแว่นกันแดดแบรนด์แท้ทั้งหมด", description: "รวมกรอบแว่นสายตาและแว่นกันแดดแบรนด์แท้ที่ J.O. Vision Care ร้านแว่นอุดร หนองคาย พร้อมบริการตรวจวัดสายตาและประกอบเลนส์", url: "/products" }),
 };
 
 export default async function ProductsPage() {

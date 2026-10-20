@@ -8,7 +8,7 @@ import { getArticleBySlug, getPublishedArticles } from "@/lib/queries";
 import { redirectOrNotFound } from "@/lib/redirects";
 import { plainText, renderMarkdown } from "@/lib/markdown";
 import { faqNode, parseFaq } from "@/lib/faq";
-import { absoluteUrl, clip, site } from "@/lib/site";
+import { absoluteUrl, clip, site, shareMeta } from "@/lib/site";
 import { breadcrumbNode, ORG_ID, organizationNode } from "@/lib/seo";
 import { getContact } from "@/lib/settings";
 
@@ -27,8 +27,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return {
     title, description,
     alternates: { canonical: url },
-    openGraph: { type: "article", title, description, url, publishedTime: a.publishedAt?.toISOString(), modifiedTime: a.updatedAt.toISOString(), images: a.cover ? [{ url: a.cover, alt: a.coverAlt || a.title }] : [{ url: site.ogImage }] },
-    twitter: { card: "summary_large_image", title, description },
+    ...shareMeta({ title, description, url, type: "article", publishedTime: a.publishedAt?.toISOString(), modifiedTime: a.updatedAt.toISOString(), image: a.cover ? { url: a.cover, alt: a.coverAlt || a.title } : null }),
   };
 }
 

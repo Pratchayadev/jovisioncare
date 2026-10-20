@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { shareMeta } from "@/lib/site";
 import Link from "next/link";
 import { Prose } from "@/components/Prose";
 import { CookieSettingsButton } from "@/components/CookieBanner";
@@ -10,6 +11,7 @@ export const metadata: Metadata = {
   title: "นโยบายความเป็นส่วนตัว",
   description: "นโยบายความเป็นส่วนตัวและการใช้คุกกี้ของเว็บไซต์ J.O. Vision Care",
   alternates: { canonical: "/privacy" },
+  ...shareMeta({ title: "นโยบายความเป็นส่วนตัว", description: "นโยบายความเป็นส่วนตัวและการใช้คุกกี้ของเว็บไซต์ J.O. Vision Care", url: "/privacy" }),
 };
 
 export default async function PrivacyPage() {

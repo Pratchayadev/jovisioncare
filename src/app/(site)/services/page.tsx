@@ -3,7 +3,7 @@ import Link from "next/link";
 import JsonLd from "@/components/JsonLd";
 import { getPublishedServices, serviceHref } from "@/lib/queries";
 import { getBranches } from "@/lib/settings";
-import { absoluteUrl, SITE_URL } from "@/lib/site";
+import { absoluteUrl, SITE_URL, shareMeta } from "@/lib/site";
 import { breadcrumbNode } from "@/lib/seo";
 import { serviceNode } from "@/lib/service-seo";
 
@@ -13,6 +13,7 @@ export const metadata: Metadata = {
   title: "บริการร้านแว่น ตัดแว่น วัดสายตา อุดรธานี หนองคาย",
   description: "รวมบริการของ J.O. Vision Care ตรวจวัดสายตา ตัดแว่น เลนส์แว่นตา เลนส์โปรเกรสซีฟ แว่นเด็ก เปลี่ยนเลนส์ ซ่อมและปรับแว่น ที่สาขาอุดรธานีและหนองคาย",
   alternates: { canonical: "/services" },
+  ...shareMeta({ title: "บริการร้านแว่น ตัดแว่น วัดสายตา อุดรธานี หนองคาย", description: "รวมบริการของ J.O. Vision Care ตรวจวัดสายตา ตัดแว่น เลนส์แว่นตา เลนส์โปรเกรสซีฟ แว่นเด็ก เปลี่ยนเลนส์ ซ่อมและปรับแว่น ที่สาขาอุดรธานีและหนองคาย", url: "/services" }),
 };
 
 export default async function ServicesPage() {

@@ -8,7 +8,7 @@ import IgPost from "./IgPost";
 import { getBranches, getContact } from "@/lib/settings";
 import { getPublishedProducts, getPublishedReviews, getPublishedServices, serviceHref, toCard } from "@/lib/queries";
 import { servesBranch } from "@/lib/service-seo";
-import { clip, storePhotos, storePhotosNongKhai } from "@/lib/site";
+import { clip, OG_NONGKHAI, shareMeta, storePhotos, storePhotosNongKhai } from "@/lib/site";
 import { breadcrumbNode, opticianNode, organizationNode } from "@/lib/seo";
 import type { BranchId } from "@/lib/branches";
 
@@ -27,12 +27,11 @@ export async function branchMetadata(id: BranchId): Promise<Metadata> {
   const [{ b }, c] = await Promise.all([load(id), getContact()]);
   const title = `ร้านแว่น${b.short} ตรวจวัดสายตาฟรี ตัดแว่น — ${b.place} | J.O. Vision Care`;
   const description = clip(`ร้านแว่น${b.short} J.O. Vision Care ${b.place} ${b.daysLabel} ${b.hours}${c.phone ? ` โทร ${c.phone}` : ""} ตรวจวัดสายตาฟรี ตัดแว่น เลนส์กรองแสงสีฟ้า เลนส์ออโต้ กรอบแว่นแบรนด์แท้ ${b.addr}`);
-  const img = PHOTOS[id][0]?.src;
   return {
     title: { absolute: title },
     description,
     alternates: { canonical: b.path },
-    openGraph: { type: "website", locale: "th_TH", title, description, url: b.path, images: img ? [{ url: img, alt: `ร้านแว่น${b.short} J.O. Vision Care` }] : undefined },
+    ...shareMeta({ title, description, url: b.path, image: id === "nongkhai" ? OG_NONGKHAI : null }),
   };
 }
 

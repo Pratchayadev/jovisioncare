@@ -6,7 +6,7 @@ import { getPublishedServices, getServiceBySlug, serviceHref } from "@/lib/queri
 import { redirectOrNotFound } from "@/lib/redirects";
 import { plainText, renderMarkdown } from "@/lib/markdown";
 import { faqNode, parseFaq } from "@/lib/faq";
-import { absoluteUrl, clip } from "@/lib/site";
+import { absoluteUrl, clip, shareMeta } from "@/lib/site";
 import { breadcrumbNode, organizationNode } from "@/lib/seo";
 import { serviceNode, servesBranch } from "@/lib/service-seo";
 import { getBranches, getContact } from "@/lib/settings";
@@ -20,7 +20,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   if (!s) return {};
   const title = s.metaTitle || s.title;
   const description = s.metaDescription || clip(s.summary || plainText(s.content));
-  return { title, description, alternates: { canonical: `/services/${s.slug}` }, openGraph: { title, description, url: `/services/${s.slug}` } };
+  return { title, description, alternates: { canonical: `/services/${s.slug}` }, ...shareMeta({ title, description, url: `/services/${s.slug}` }) };
 }
 
 export default async function ServicePage({ params }: Props) {
