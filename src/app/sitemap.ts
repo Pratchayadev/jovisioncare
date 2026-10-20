@@ -17,7 +17,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   return [
     { url: SITE_URL + "/", changeFrequency: "weekly", priority: 1 },
     { url: SITE_URL + "/udon-thani", changeFrequency: "monthly", priority: 0.9 },
-    { url: SITE_URL + "/nong-khai", changeFrequency: "monthly", priority: 0.9 },
+    ...(["/nong-khai", "/lo/nong-khai", "/en/nong-khai"] as const).map((p) => ({
+      url: SITE_URL + p,
+      changeFrequency: "monthly" as const,
+      priority: p === "/nong-khai" ? 0.9 : 0.8,
+      alternates: { languages: { th: SITE_URL + "/nong-khai", lo: SITE_URL + "/lo/nong-khai", en: SITE_URL + "/en/nong-khai" } },
+    })),
     { url: SITE_URL + "/products", changeFrequency: "weekly", priority: 0.8 },
     { url: SITE_URL + "/brands", changeFrequency: "monthly", priority: 0.7 },
     { url: SITE_URL + "/services", changeFrequency: "monthly", priority: 0.8 },

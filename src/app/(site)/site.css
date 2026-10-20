@@ -393,3 +393,18 @@ button { font-family: inherit; }
 .why span { font-size: 13px; color: #cfcbc6; line-height: 1.55; }
 .bp-note { margin: 0; font-size: 13px; color: var(--muted); }
 .bp-note a { text-decoration: underline; text-underline-offset: 2px; }
+
+/* หน้าภาษาลาว / อังกฤษ */
+.intl-lo { --font-th: "Noto Sans Lao", "IBM Plex Sans Thai", system-ui, sans-serif; font-family: var(--font-th); }
+.intl-lo .lead, .intl-lo .prose, .intl-lo .faq p { line-height: 1.85; }
+.intl-langs { display: flex; gap: 4px; }
+.intl-langs a { color: #d9d6d2 !important; font-size: 14px; padding: 8px 10px; border-radius: 999px; min-height: 36px; display: inline-flex; align-items: center; }
+.intl-langs a.on { background: var(--paper); color: var(--ink) !important; font-weight: 600; }
+.intl-brands { margin: 0; font-family: var(--font-display); font-size: 20px; letter-spacing: .05em; line-height: 1.6; color: #3d3a37; max-width: 760px; }
+.intl-footer { background: var(--ink); color: #cfcbc6; padding: 32px 16px 120px; display: grid; gap: 10px; font-size: 13px; line-height: 1.8; }
+.intl-footer > * { max-width: 1240px; width: 100%; margin: 0 auto; }
+.intl-footer p { margin: 0 auto; }
+.intl-footer nav { display: flex; flex-wrap: wrap; gap: 4px 16px; }
+.intl-footer a { color: #d9d6d2 !important; text-decoration: underline; text-underline-offset: 2px; }
+.intl .branch dl { grid-template-columns: auto 1fr; }
+.bp-langs { margin: 0; font-size: 15px; } .bp-langs a { text-decoration: underline; text-underline-offset: 3px; font-weight: 600; } .bp-langs a[lang="lo"] { font-family: "Noto Sans Lao", var(--font-th); }

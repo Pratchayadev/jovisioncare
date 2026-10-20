@@ -6,6 +6,7 @@ import JsonLd from "./JsonLd";
 import ProductCard from "./ProductCard";
 import IgPost from "./IgPost";
 import WhyUs from "./WhyUs";
+import { NONGKHAI_LANGUAGES } from "@/lib/intl";
 import { getBranches, getContact } from "@/lib/settings";
 import { getPublishedProducts, getPublishedReviews, getPublishedServices, serviceHref, toCard } from "@/lib/queries";
 import { servesBranch } from "@/lib/service-seo";
@@ -31,7 +32,7 @@ export async function branchMetadata(id: BranchId): Promise<Metadata> {
   return {
     title: { absolute: title },
     description,
-    alternates: { canonical: b.path },
+    alternates: { canonical: b.path, ...(id === "nongkhai" ? { languages: NONGKHAI_LANGUAGES } : {}) },
     ...shareMeta({ title, description, url: b.path, image: id === "nongkhai" ? OG_NONGKHAI : null }),
   };
 }
@@ -51,6 +52,11 @@ export default async function BranchPage({ id }: { id: BranchId }) {
         <ol className="crumbs"><li><Link href="/">หน้าแรก</Link></li><li aria-current="page">สาขา{b.province}</li></ol>
         <p className="eyebrow">BRANCH — {b.en}</p>
         <h1 className="h2">ร้านแว่น{b.short} J.O. Vision Care สาขา{b.province}</h1>
+        {id === "nongkhai" && (
+          <p className="bp-langs">
+            <Link href="/lo/nong-khai" hrefLang="lo" lang="lo">ພາສາລາວ</Link> · <Link href="/en/nong-khai" hrefLang="en" lang="en">English</Link>
+          </p>
+        )}
         <p className="lead">
           J.O. Vision Care สาขา{b.province} ตั้งอยู่ที่{b.place} {b.daysLabel} {b.hours} บริการตรวจวัดสายตาฟรีอย่างละเอียด ตัดแว่นสายตา
           เลนส์กรองแสงสีฟ้า เลนส์ออโต้ และกรอบแว่นแบรนด์แท้ ทักแอดมินหรือแวะมาที่ร้านได้เลย
