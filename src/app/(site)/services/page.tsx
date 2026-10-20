@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import JsonLd from "@/components/JsonLd";
+import WhyUs from "@/components/WhyUs";
 import { getPublishedServices, serviceHref } from "@/lib/queries";
 import { getBranches } from "@/lib/settings";
 import { absoluteUrl, SITE_URL, shareMeta } from "@/lib/site";
@@ -61,6 +62,7 @@ export default async function ServicesPage() {
             </ul>
           </section>
         )}
+        <WhyUs />
         <section className="bp-section" aria-labelledby="svc-branches">
           <h2 id="svc-branches" className="bp-h">เลือกสาขาที่สะดวก</h2>
           <div className="row-btns svc-branch-btns">

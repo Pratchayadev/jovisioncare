@@ -25,6 +25,7 @@ export type BranchSettings = {
   days: Day[];
   directions: string; // การเดินทาง/จุดสังเกต — 1 บรรทัดต่อ 1 ข้อ
   parking: string; // ที่จอดรถ
+  gbpUrl: string; // ลิงก์ Google Business Profile / Google Maps ของสาขา
 };
 
 /** ส่วนที่คงที่ (ผูกกับดีไซน์และ SEO) */
@@ -50,6 +51,7 @@ export const DEFAULT_BRANCHES: Record<BranchId, BranchSettings> = {
     days: ALL_DAYS,
     directions: "",
     parking: "",
+    gbpUrl: "",
   },
   nongkhai: {
     place: "ห้างอัศวรรณ 1 (ฝั่งโลตัส)",
@@ -65,6 +67,7 @@ export const DEFAULT_BRANCHES: Record<BranchId, BranchSettings> = {
     days: ALL_DAYS,
     directions: "",
     parking: "",
+    gbpUrl: "",
   },
 };
 

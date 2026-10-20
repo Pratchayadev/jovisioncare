@@ -387,3 +387,9 @@ button { font-family: inherit; }
 .bp-services li:has(a) { padding: 0; }
 .bp-services a { display: grid; gap: 4px; padding: 16px; height: 100%; }
 .bp-all { display: inline-block; margin-top: 14px; font-size: 14px; font-weight: 600; border-bottom: 1.5px solid var(--ink); padding-bottom: 2px; }
+.why { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; grid-template-columns: repeat(auto-fill, minmax(min(100%, 210px), 1fr)); }
+.why li { background: var(--ink); color: var(--paper); border-radius: 16px; padding: 18px; display: grid; gap: 4px; }
+.why b { font-size: 17px; }
+.why span { font-size: 13px; color: #cfcbc6; line-height: 1.55; }
+.bp-note { margin: 0; font-size: 13px; color: var(--muted); }
+.bp-note a { text-decoration: underline; text-underline-offset: 2px; }

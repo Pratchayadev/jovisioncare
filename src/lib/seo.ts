@@ -38,10 +38,10 @@ export function opticianNode(b: Branch, c: Contact, image?: string) {
       addressCountry: "TH",
     },
     geo: { "@type": "GeoCoordinates", latitude: b.lat, longitude: b.lng },
-    hasMap: b.mapView,
+    hasMap: b.gbpUrl || b.mapView,
     openingHoursSpecification: [{ "@type": "OpeningHoursSpecification", dayOfWeek: b.days, opens: b.opens, closes: b.closes }],
     ...(c.phoneIntl ? { telephone: c.phoneIntl } : {}),
-    sameAs: [c[b.fbKey], c.ig, c.tiktok],
+    sameAs: [b.gbpUrl, c[b.fbKey], c.ig, c.tiktok].filter(Boolean),
     priceRange: "฿฿",
   };
 }

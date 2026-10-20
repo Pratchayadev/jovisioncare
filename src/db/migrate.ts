@@ -6,7 +6,7 @@ import { migrate } from "drizzle-orm/libsql/migrator";
 import { db, t } from "../lib/db";
 import { dbUrl } from "../lib/env";
 import { seed } from "./seed";
-import { EYE_EXAM_BEFORE_FREE, SERVICE_SEED } from "./services-seed";
+import { EYE_EXAM_BEFORE_FREE, SERVICE_SEED, TURNAROUND_FAQ } from "./services-seed";
 import { eq } from "drizzle-orm";
 
 const host = (() => { try { return new URL(dbUrl.replace(/^libsql:/, "https:")).host || dbUrl; } catch { return dbUrl; } })();
@@ -61,6 +61,36 @@ async function main() {
       console.log(`[db] อัปเดต “ตรวจวัดสายตาฟรี” ในหน้าบริการ: ${Object.keys(patch).join(", ") || "ไม่มี (ถูกแก้ในหลังบ้านแล้ว)"}`);
     }
     await db.insert(t.settings).values({ key: "content_free_exam_v1", value: new Date().toISOString() }).onConflictDoNothing();
+  }
+  // ครั้งเดียว: แบรนด์เพิ่มเติมที่ร้านแจ้ง (20 ต.ค. 2569) — ใส่ต่อท้าย ไม่แตะแบรนด์เดิม
+  const brandsFlag = await db.query.settings.findFirst({ where: (s, { eq }) => eq(s.key, "brands_v2") });
+  if (!brandsFlag) {
+    const extra: [string, string][] = [["PAUL HUEMAN", "paul-hueman"], ["LEVI'S", "levis"], ["MACQUARRIE", "macquarrie"], ["UNDER ARMOUR", "under-armour"], ["APRIL", "april"], ["CARRERA", "carrera"], ["PYRAMID", "pyramid"], ["PRADA", "prada"]];
+    const existing = await db.select({ name: t.brands.name, sortOrder: t.brands.sortOrder }).from(t.brands);
+    const names = new Set(existing.map((b) => b.name.toUpperCase().replace(/[^A-Z0-9]/g, "")));
+    let order = Math.max(0, ...existing.map((b) => b.sortOrder)) + 1;
+    let added = 0;
+    for (const [name, slug] of extra) {
+      if (names.has(name.replace(/[^A-Z0-9]/g, ""))) continue;
+      const r = await db.insert(t.brands).values({ name, slug, sortOrder: order++ }).onConflictDoNothing().returning({ id: t.brands.id });
+      added += r.length;
+    }
+    await db.insert(t.settings).values({ key: "brands_v2", value: new Date().toISOString() }).onConflictDoNothing();
+    console.log(`[db] เพิ่มแบรนด์ใหม่ ${added} แบรนด์`);
+  }
+  // ครั้งเดียว: เพิ่มคำถาม “รอกี่วัน” ในหน้าบริการ (ข้ามถ้ามีคำถามเรื่องนี้อยู่แล้ว)
+  const turnFlag = await db.query.settings.findFirst({ where: (s, { eq }) => eq(s.key, "content_turnaround_v1") });
+  if (!turnFlag) {
+    for (const [slug, item] of Object.entries(TURNAROUND_FAQ)) {
+      const row = await db.query.services.findFirst({ where: (s, { eq }) => eq(s.slug, slug) });
+      if (!row) continue;
+      let faq: { q: string; a: string }[] = [];
+      try { faq = JSON.parse(row.faq || "[]"); } catch { continue; }
+      if (faq.some((f) => /กี่วัน|รอนาน/.test(f.q))) continue;
+      await db.update(t.services).set({ faq: JSON.stringify([...faq, item]) }).where(eq(t.services.id, row.id));
+    }
+    await db.insert(t.settings).values({ key: "content_turnaround_v1", value: new Date().toISOString() }).onConflictDoNothing();
+    console.log("[db] เพิ่มคำถาม “รอกี่วัน” ในหน้าบริการ");
   }
   // บันทึกเวลาที่ฐานข้อมูลนี้ถูกใช้ครั้งแรก — ถ้าค่านี้เปลี่ยน แปลว่าฐานข้อมูลถูกสร้างใหม่
   await db.insert(t.settings).values({ key: "db_initialized_at", value: new Date().toISOString() }).onConflictDoNothing();

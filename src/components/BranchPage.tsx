@@ -5,6 +5,7 @@ import { notFound } from "next/navigation";
 import JsonLd from "./JsonLd";
 import ProductCard from "./ProductCard";
 import IgPost from "./IgPost";
+import WhyUs from "./WhyUs";
 import { getBranches, getContact } from "@/lib/settings";
 import { getPublishedProducts, getPublishedReviews, getPublishedServices, serviceHref, toCard } from "@/lib/queries";
 import { servesBranch } from "@/lib/service-seo";
@@ -68,9 +69,11 @@ export default async function BranchPage({ id }: { id: BranchId }) {
               <dt>เวลา</dt><dd>{b.daysLabel} {b.hours}</dd>
               {c.phone && (<><dt>โทร</dt><dd><a href={tel!}>{c.phone}</a></dd></>)}
             </dl>
+            <p className="bp-note">ไม่มีวันหยุดประจำ หากร้านปิดวันใดจะแจ้งทาง <a href={c[b.fbKey]} target="_blank" rel="noopener">เพจ Facebook สาขา{b.province}</a></p>
             <div className="row-btns">
               <a href={b.map} target="_blank" rel="noopener" className="pill solid">นำทาง Google Maps</a>
               {tel && <a href={tel} className="pill">โทรหาร้าน</a>}
+              {b.gbpUrl && <a href={b.gbpUrl} target="_blank" rel="noopener" className="pill">รีวิวบน Google</a>}
               <a href={c[b.fbKey]} target="_blank" rel="noopener" className="pill">เพจ Facebook สาขา</a>
               {c.line && <a href={c.line} target="_blank" rel="noopener" className="pill">LINE</a>}
             </div>
@@ -85,6 +88,8 @@ export default async function BranchPage({ id }: { id: BranchId }) {
             />
           </div>
         </section>
+
+        <WhyUs />
 
         {(b.directions || b.parking) && (
           <section className="bp-section" aria-labelledby="bp-way">

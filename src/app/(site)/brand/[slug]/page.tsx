@@ -12,9 +12,11 @@ type Props = { params: Promise<{ slug: string }> };
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const b = await getBrandBySlug(decodeURIComponent((await params).slug));
   if (!b) return {};
+  // ยังไม่มีสินค้าและเนื้อหา = หน้าบาง → ไม่ให้ Google เก็บจนกว่าจะเพิ่มข้อมูล
+  const thin = !b.content?.trim() && (await getPublishedProducts({ brandId: b.id, limit: 1 })).length === 0;
   const title = b.metaTitle || `แว่น ${b.name} ของแท้ ร้านแว่นอุดร หนองคาย`;
   const description = b.metaDescription || b.description || `กรอบแว่นและแว่นกันแดด ${b.name} ของแท้ที่ J.O. Vision Care สาขาอุดรธานีและหนองคาย พร้อมตรวจวัดสายตาและประกอบเลนส์`;
-  return { title, description, alternates: { canonical: `/brand/${b.slug}` }, ...shareMeta({ title, description, url: `/brand/${b.slug}` }) };
+  return { title, description, ...(thin ? { robots: { index: false, follow: true } } : {}), alternates: { canonical: `/brand/${b.slug}` }, ...shareMeta({ title, description, url: `/brand/${b.slug}` }) };
 }
 
 export default async function BrandPage({ params }: Props) {

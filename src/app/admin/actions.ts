@@ -331,10 +331,12 @@ export async function saveBranch(_: FormState, f: FormData): Promise<FormState &
   const pos = parseLatLng(str(f, "latlng"));
   if (!pos) return { error: "พิกัดไม่ถูกต้อง — ใส่แบบ 17.418690, 102.785187 หรือวางลิงก์ Google Maps ที่มีพิกัด" };
   if (pos.lat < 5 || pos.lat > 21 || pos.lng < 97 || pos.lng > 106) return { error: "พิกัดอยู่นอกประเทศไทย — ตรวจสอบอีกครั้ง" };
+  const gbpUrl = str(f, "gbpUrl");
+  if (gbpUrl && !/^https:\/\/(maps\.app\.goo\.gl|goo\.gl\/maps|g\.page|share\.google|g\.co\/kgs|(www\.)?google\.[a-z.]+\/maps|maps\.google\.[a-z.]+)\//i.test(gbpUrl)) return { error: "ลิงก์ Google Business Profile ต้องเป็นลิงก์จาก Google Maps เช่น https://maps.app.goo.gl/…" };
   const days = DAYS.map(([d]) => d).filter((d) => f.getAll("days").includes(d));
   if (!days.length) return { error: "เลือกวันที่เปิดอย่างน้อย 1 วัน" };
 
-  const value = JSON.stringify({ place, line1, subdistrict: str(f, "subdistrict").replace(/^ต\.\s*/, ""), district: district.replace(/^อ\.\s*/, ""), province: province.replace(/^จ\.\s*/, ""), postalCode, lat: pos.lat, lng: pos.lng, opens, closes, days, directions: str(f, "directions").split("\n").map((l) => l.trim().replace(/^[-•*]\s*/, "")).filter(Boolean).slice(0, 12).join("\n"), parking: str(f, "parking").slice(0, 300) });
+  const value = JSON.stringify({ place, line1, subdistrict: str(f, "subdistrict").replace(/^ต\.\s*/, ""), district: district.replace(/^อ\.\s*/, ""), province: province.replace(/^จ\.\s*/, ""), postalCode, lat: pos.lat, lng: pos.lng, opens, closes, days, directions: str(f, "directions").split("\n").map((l) => l.trim().replace(/^[-•*]\s*/, "")).filter(Boolean).slice(0, 12).join("\n"), parking: str(f, "parking").slice(0, 300), gbpUrl });
   await db.insert(t.settings).values({ key: branchKey(id), value }).onConflictDoUpdate({ target: t.settings.key, set: { value, updatedAt: new Date() } });
   refresh();
   return { ok: true };

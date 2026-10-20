@@ -87,3 +87,12 @@ export function shareMeta(o: { title: string; description?: string; url: string;
     twitter: { card: "summary_large_image" as const, title: o.title, description: o.description, images: [images[0].url] },
   };
 }
+
+/** จุดเด่นของร้าน (ร้านยืนยัน 20 ต.ค. 2569) */
+export const STRENGTHS: [string, string][] = [
+  ["ตรวจวัดสายตาฟรี", "ทั้งสาขาอุดรธานีและหนองคาย"],
+  ["เครื่องมือได้มาตรฐาน", "วัดค่าสายตาด้วยเครื่องมือที่ได้มาตรฐาน"],
+  ["แบรนด์แท้ทุกชิ้น", "กรอบแว่นและแว่นกันแดดของแท้"],
+  ["ประสบการณ์มากกว่า 10 ปี", "ดูแลสายตาและประกอบแว่นมาอย่างยาวนาน"],
+  ["รับแว่นภายใน 1–7 วัน", "ขึ้นอยู่กับรายละเอียดของงานและชนิดเลนส์"],
+];

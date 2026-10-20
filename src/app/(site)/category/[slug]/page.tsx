@@ -12,9 +12,10 @@ type Props = { params: Promise<{ slug: string }> };
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const c = await getCategoryBySlug(decodeURIComponent((await params).slug));
   if (!c) return {};
+  const thin = !c.content?.trim() && (await getPublishedProducts({ categoryId: c.id, limit: 1 })).length === 0;
   const title = c.metaTitle || `${c.name} แบรนด์แท้ ร้านแว่นอุดร หนองคาย`;
   const description = c.metaDescription || c.description || `${c.name} แบรนด์แท้ที่ J.O. Vision Care ร้านแว่นอุดรและหนองคาย ตรวจวัดสายตาฟรี ทักแอดมินได้ทุกช่องทาง`;
-  return { title, description, alternates: { canonical: `/category/${c.slug}` }, ...shareMeta({ title, description, url: `/category/${c.slug}` }) };
+  return { title, description, ...(thin ? { robots: { index: false, follow: true } } : {}), alternates: { canonical: `/category/${c.slug}` }, ...shareMeta({ title, description, url: `/category/${c.slug}` }) };
 }
 
 export default async function CategoryPage({ params }: Props) {
