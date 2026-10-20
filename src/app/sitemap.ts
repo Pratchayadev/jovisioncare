@@ -1,5 +1,5 @@
 import type { MetadataRoute } from "next";
-import { and, eq } from "drizzle-orm";
+import { and, eq, sql } from "drizzle-orm";
 import { db, t } from "@/lib/db";
 import { SITE_URL } from "@/lib/site";
 
@@ -11,7 +11,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     db.query.categories.findMany({ columns: { id: true, slug: true, updatedAt: true, content: true } }),
     db.query.brands.findMany({ columns: { id: true, slug: true, updatedAt: true, content: true } }),
     db.query.services.findMany({ where: and(eq(t.services.published, true), eq(t.services.hasPage, true)), columns: { slug: true, updatedAt: true } }),
-    db.query.articles.findMany({ where: eq(t.articles.published, true), columns: { slug: true, updatedAt: true, cover: true } }),
+    db.query.articles.findMany({ where: and(eq(t.articles.published, true), sql`(${t.articles.publishedAt} IS NULL OR ${t.articles.publishedAt} <= unixepoch())`), columns: { slug: true, updatedAt: true, cover: true } }),
   ]);
   const abs = (u: string) => (u.startsWith("http") ? u : SITE_URL + u);
   return [

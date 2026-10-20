@@ -1,5 +1,5 @@
 import "server-only";
-import { and, asc, desc, eq, ne, sql } from "drizzle-orm";
+import { and, asc, desc, eq, gt, isNull, ne, or, sql } from "drizzle-orm";
 import { db, t } from "./db";
 
 const withRelations = {
@@ -68,9 +68,11 @@ export const getPublishedReviews = () =>
   db.query.reviews.findMany({ where: eq(t.reviews.published, true), orderBy: [asc(t.reviews.sortOrder), desc(t.reviews.id)], limit: 12 });
 
 /* ---------- บทความ ---------- */
+// บทความที่ตั้งเวลาเผยแพร่ล่วงหน้า จะแสดงเมื่อถึงเวลา (หน้าเว็บ cache 1 ชม. จึงขึ้นภายในราว 1 ชม.)
+const liveArticle = () => and(eq(t.articles.published, true), or(isNull(t.articles.publishedAt), sql`${t.articles.publishedAt} <= unixepoch()`));
 export const getPublishedArticles = (limit?: number) =>
-  db.query.articles.findMany({ where: eq(t.articles.published, true), orderBy: [desc(t.articles.publishedAt), desc(t.articles.id)], limit });
-export const getArticleBySlug = (slug: string) => db.query.articles.findFirst({ where: and(eq(t.articles.slug, slug), eq(t.articles.published, true)) });
+  db.query.articles.findMany({ where: liveArticle(), orderBy: [desc(t.articles.publishedAt), desc(t.articles.id)], limit });
+export const getArticleBySlug = (slug: string) => db.query.articles.findFirst({ where: and(eq(t.articles.slug, slug), liveArticle()) });
 
 /** แบรนด์ทั้งหมด พร้อมจำนวนสินค้าที่เผยแพร่ */
 export async function getBrandsWithCounts() {
@@ -89,3 +91,13 @@ export const getServiceBySlug = (slug: string) =>
   db.query.services.findFirst({ where: and(eq(t.services.slug, slug), eq(t.services.published, true), eq(t.services.hasPage, true)) });
 /** ลิงก์ของบริการ: หน้าของตัวเอง หรือหน้าที่มีอยู่แล้ว */
 export const serviceHref = (s: { hasPage: boolean; slug: string; linkUrl: string | null }) => (s.hasPage ? `/services/${s.slug}` : s.linkUrl || "/services");
+
+/* ---------- โปรโมชัน ---------- */
+/** โปรโมชันที่ยังไม่หมดอายุ (เลือกสาขาได้) */
+export async function getActivePromotions(branch?: "udon" | "nongkhai") {
+  const rows = await db.query.promotions.findMany({
+    where: and(eq(t.promotions.published, true), or(isNull(t.promotions.endsAt), gt(t.promotions.endsAt, new Date()))),
+    orderBy: [asc(t.promotions.sortOrder), desc(t.promotions.id)],
+  });
+  return branch ? rows.filter((p) => p.branches === "all" || p.branches === branch) : rows;
+}

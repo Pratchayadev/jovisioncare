@@ -4,7 +4,7 @@ import HeroLens from "@/components/HeroLens";
 import LensLab from "@/components/LensLab";
 import Collection from "@/components/Collection";
 import JsonLd from "@/components/JsonLd";
-import { getBrands, getCategories, getPublishedArticles, getPublishedProducts, getPublishedReviews, toCard } from "@/lib/queries";
+import { getActivePromotions, getBrands, getCategories, getPublishedArticles, getPublishedProducts, getPublishedReviews, toCard } from "@/lib/queries";
 import ArticleCard from "@/components/ArticleCard";
 import IgPost from "@/components/IgPost";
 import { shareMeta, site, SITE_URL, storePhotos, storePhotosNongKhai } from "@/lib/site";
@@ -22,7 +22,8 @@ export const metadata: Metadata = {
 
 export default async function Home() {
   const [products, categories, brands, reviews, c] = await Promise.all([getPublishedProducts({ featuredOnly: true, limit: 24 }), getCategories(), getBrands(), getPublishedReviews(), getContact()]);
-  const [branches, articles] = await Promise.all([getBranches(), getPublishedArticles(3)]);
+  const [branches, articles, promos] = await Promise.all([getBranches(), getPublishedArticles(3), getActivePromotions()]);
+  const promo = promos.find((p) => p.featured) ?? promos[0];
   const [udon, nongkhai] = branches;
   const cards = products.map(toCard);
 
@@ -40,14 +41,16 @@ export default async function Home() {
       <JsonLd data={jsonLd} />
       <HeroLens />
 
-      <Link href="/#contact" className="promo">
-        <div className="wrap">
-          <span className="k">PROMOTION</span>
-          <span className="t">{site.promo.label}</span>
-          <span className="p">{site.promo.price}</span>
-          <span className="go">สอบถามแอดมิน →</span>
-        </div>
-      </Link>
+      {promo && (
+        <Link href={`/category/promotion#promo-${promo.id}`} className="promo">
+          <div className="wrap">
+            <span className="k">PROMOTION{promo.branches === "udon" ? " · สาขาอุดร" : promo.branches === "nongkhai" ? " · สาขาหนองคาย" : ""}</span>
+            <span className="t">{promo.highlight ? promo.title.replace(promo.highlight, "").trim() : promo.title}</span>
+            {promo.highlight && <span className="p">{promo.highlight}</span>}
+            <span className="go">{promos.length > 1 ? `ดูโปรทั้งหมด (${promos.length}) →` : "ดูรายละเอียด →"}</span>
+          </div>
+        </Link>
+      )}
 
       <section id="collection" className="section collection" aria-labelledby="collection-title">
         <div className="sec-head" data-reveal="">

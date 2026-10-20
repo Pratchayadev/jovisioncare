@@ -36,6 +36,13 @@
       "when": 1792463597354,
       "tag": "0004_services",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "6",
+      "when": 1792473437195,
+      "tag": "0005_promotions",
+      "breakpoints": true
     }
   ]
 }

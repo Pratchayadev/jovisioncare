@@ -8,7 +8,8 @@ import IgPost from "./IgPost";
 import WhyUs from "./WhyUs";
 import { branchLanguages, intlPath } from "@/lib/intl";
 import { getBranches, getContact } from "@/lib/settings";
-import { getPublishedProducts, getPublishedReviews, getPublishedServices, serviceHref, toCard } from "@/lib/queries";
+import { getActivePromotions, getPublishedProducts, getPublishedReviews, getPublishedServices, serviceHref, toCard } from "@/lib/queries";
+import PromoList from "./PromoList";
 import { servesBranch } from "@/lib/service-seo";
 import { clip, OG_NONGKHAI, shareMeta, storePhotos, storePhotosNongKhai } from "@/lib/site";
 import { breadcrumbNode, opticianNode, organizationNode } from "@/lib/seo";
@@ -39,6 +40,7 @@ export async function branchMetadata(id: BranchId): Promise<Metadata> {
 
 export default async function BranchPage({ id }: { id: BranchId }) {
   const [{ b, other }, c, reviewsAll, products, servicesAll] = await Promise.all([load(id), getContact(), getPublishedReviews(), getPublishedProducts({ featuredOnly: true, limit: 8 }), getPublishedServices()]);
+  const promos = await getActivePromotions(id);
   const services = servicesAll.filter((s) => servesBranch(s, id));
   const reviews = reviewsAll.filter((r) => r.branch === b.province);
   const photos = PHOTOS[id];
@@ -92,6 +94,8 @@ export default async function BranchPage({ id }: { id: BranchId }) {
             />
           </div>
         </section>
+
+        <div className="bp-section"><PromoList items={promos} title={`โปรโมชันที่สาขา${b.province}`} /></div>
 
         <WhyUs />
 

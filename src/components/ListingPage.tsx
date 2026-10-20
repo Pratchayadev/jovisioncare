@@ -8,7 +8,7 @@ import { Prose, FaqList } from "./Prose";
 
 type Chip = { href: string; label: string; on?: boolean };
 
-export default function ListingPage({ title, eyebrow, intro, products, chips, path, content, faq = [] }: { title: string; eyebrow: string; intro?: string | null; products: P[]; chips?: Chip[]; path: string; content?: string | null; faq?: Faq[] }) {
+export default function ListingPage({ title, eyebrow, intro, products, chips, path, content, faq = [], before }: { title: string; eyebrow: string; intro?: string | null; products: P[]; chips?: Chip[]; path: string; content?: string | null; faq?: Faq[]; before?: React.ReactNode }) {
   const crumbs = [{ name: "หน้าแรก", url: "/" }, { name: title, url: path }];
   return (
     <>
@@ -29,6 +29,7 @@ export default function ListingPage({ title, eyebrow, intro, products, chips, pa
         {intro && <p className="lead">{intro}</p>}
       </div>
       <div className="page-body" style={{ paddingBottom: 24 }}>
+        {before}
         {chips && (
           <nav className="filters" aria-label="หมวดสินค้า">
             {chips.map((c) => <Link key={c.href} href={c.href} className={"filter" + (c.on ? " on" : "")} aria-current={c.on ? "page" : undefined}>{c.label}</Link>)}

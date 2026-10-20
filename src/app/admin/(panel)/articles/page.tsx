@@ -31,7 +31,7 @@ export default async function ArticlesAdmin({ searchParams }: { searchParams: Pr
                   <td><span className={"seo-score " + (sc >= 80 ? "good" : sc >= 50 ? "mid" : "low")}>{sc}</span></td>
                   <td>
                     <form action={toggleArticle}><input type="hidden" name="id" value={a.id} />
-                      <button className={"badge " + (a.published ? "on" : "off")} title="กดเพื่อสลับ">{a.published ? "เผยแพร่" : "ร่าง"}</button>
+                      <button className={"badge " + (a.published ? "on" : "off")} title="กดเพื่อสลับ">{!a.published ? "ร่าง" : a.publishedAt && a.publishedAt.getTime() > Date.now() ? `ตั้งเวลา ${a.publishedAt.toLocaleDateString("th-TH", { day: "numeric", month: "short", timeZone: "Asia/Bangkok" })}` : "เผยแพร่"}</button>
                     </form>
                   </td>
                   <td className="c-hide">{a.updatedAt.toLocaleDateString("th-TH")}</td>

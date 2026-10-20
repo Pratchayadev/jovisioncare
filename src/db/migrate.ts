@@ -6,6 +6,8 @@ import { migrate } from "drizzle-orm/libsql/migrator";
 import { db, t } from "../lib/db";
 import { dbUrl } from "../lib/env";
 import { seed } from "./seed";
+import { PROMO_SEED } from "./promos-seed";
+import { ARTICLE_SEED } from "./articles-seed";
 import { EYE_EXAM_BEFORE_FREE, SERVICE_SEED, TURNAROUND_FAQ } from "./services-seed";
 import { eq } from "drizzle-orm";
 
@@ -13,7 +15,7 @@ const host = (() => { try { return new URL(dbUrl.replace(/^libsql:/, "https:")).
 
 async function counts() {
   const out: Record<string, number | string> = {};
-  for (const name of ["products", "categories", "brands", "reviews", "settings", "articles", "services"]) {
+  for (const name of ["products", "categories", "brands", "reviews", "settings", "articles", "services", "promotions"]) {
     try {
       const r = await db.all<{ n: number }>(sql.raw(`SELECT count(*) AS n FROM ${name}`));
       out[name] = r[0]?.n ?? 0;
@@ -91,6 +93,20 @@ async function main() {
     }
     await db.insert(t.settings).values({ key: "content_turnaround_v1", value: new Date().toISOString() }).onConflictDoNothing();
     console.log("[db] เพิ่มคำถาม “รอกี่วัน” ในหน้าบริการ");
+  }
+  // ครั้งเดียว: โปรโมชันจากภาพที่ร้านส่งมา
+  const promoFlag = await db.query.settings.findFirst({ where: (s, { eq }) => eq(s.key, "promos_v1") });
+  if (!promoFlag) {
+    for (const row of PROMO_SEED) await db.insert(t.promotions).values(row);
+    await db.insert(t.settings).values({ key: "promos_v1", value: new Date().toISOString() }).onConflictDoNothing();
+    console.log(`[db] ใส่โปรโมชัน ${PROMO_SEED.length} รายการ`);
+  }
+  // ครั้งเดียว: บทความชุดแรก (ตั้งเวลาเผยแพร่สัปดาห์ละ 1)
+  const artFlag = await db.query.settings.findFirst({ where: (s, { eq }) => eq(s.key, "articles_v1") });
+  if (!artFlag) {
+    for (const row of ARTICLE_SEED) await db.insert(t.articles).values(row).onConflictDoNothing();
+    await db.insert(t.settings).values({ key: "articles_v1", value: new Date().toISOString() }).onConflictDoNothing();
+    console.log(`[db] ใส่บทความ ${ARTICLE_SEED.length} บทความ`);
   }
   // บันทึกเวลาที่ฐานข้อมูลนี้ถูกใช้ครั้งแรก — ถ้าค่านี้เปลี่ยน แปลว่าฐานข้อมูลถูกสร้างใหม่
   await db.insert(t.settings).values({ key: "db_initialized_at", value: new Date().toISOString() }).onConflictDoNothing();

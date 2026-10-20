@@ -61,7 +61,8 @@ export default function ArticleForm({ article: a, host }: { article?: Article; h
           <div className="panel card">
             <h2>การเผยแพร่</h2>
             <label className="check"><input type="checkbox" name="published" defaultChecked={a?.published ?? false} /> เผยแพร่บนเว็บไซต์</label>
-            <small style={{ color: "var(--muted)" }}>{a?.publishedAt ? `เผยแพร่ครั้งแรก ${a.publishedAt.toLocaleDateString("th-TH")}` : "ยังไม่เผยแพร่ เก็บเป็นฉบับร่างได้"}</small>
+            <label className="fld"><span>วันเวลาเผยแพร่</span><input type="datetime-local" name="publishedAt" defaultValue={a?.publishedAt ? new Date(a.publishedAt.getTime() + 7 * 3600e3).toISOString().slice(0, 16) : ""} />
+              <small>เว้นว่าง = เผยแพร่ทันทีที่ติ๊ก “เผยแพร่” · ตั้งเป็นวันในอนาคตเพื่อตั้งเวลาลงบทความ (ขึ้นเว็บภายในราว 1 ชั่วโมงหลังถึงเวลา)</small></label>
           </div>
           <div className="panel card">
             <h2>รูปปก</h2>

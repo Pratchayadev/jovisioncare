@@ -124,6 +124,23 @@ export const services = sqliteTable("services", {
   ...timestamps,
 });
 
+// โปรโมชัน — จัดการได้ที่ /admin/promotions · หมดอายุแล้วซ่อนเอง
+export const promotions = sqliteTable("promotions", {
+  id: integer("id").primaryKey({ autoIncrement: true }),
+  title: text("title").notNull(),
+  highlight: text("highlight"), // ข้อความเด่นบนแถบหน้าแรก เช่น "1,700 บาท"
+  summary: text("summary"),
+  details: text("details").notNull().default(""), // markdown
+  image: text("image"),
+  imageAlt: text("image_alt"),
+  branches: text("branches").notNull().default("all"),
+  endsAt: integer("ends_at", { mode: "timestamp" }), // ว่าง = ไม่มีกำหนด
+  featured: integer("featured", { mode: "boolean" }).notNull().default(false), // แสดงบนแถบหน้าแรก
+  published: integer("published", { mode: "boolean" }).notNull().default(true),
+  sortOrder: integer("sort_order").notNull().default(0),
+  ...timestamps,
+});
+
 // URL เก่า → URL ใหม่ (301) สร้างอัตโนมัติเมื่อเปลี่ยน slug หรือลบ
 export const redirects = sqliteTable("redirects", {
   fromPath: text("from_path").primaryKey(),
@@ -151,3 +168,4 @@ export type Review = typeof reviews.$inferSelect;
 export type Article = typeof articles.$inferSelect;
 export type Redirect = typeof redirects.$inferSelect;
 export type Service = typeof services.$inferSelect;
+export type Promotion = typeof promotions.$inferSelect;

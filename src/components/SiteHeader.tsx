@@ -24,6 +24,7 @@ export default function SiteHeader({ hasReviews = false, hasArticles = false }: 
         <Link href="/udon-thani">ร้านแว่นอุดร</Link>
         <Link href="/nong-khai">ร้านแว่นหนองคาย</Link>
         <Link href="/services">บริการ</Link>
+        <Link href="/category/promotion">โปรโมชั่น</Link>
         {hasArticles && <Link href="/articles">บทความ</Link>}
       </nav>
     </header>

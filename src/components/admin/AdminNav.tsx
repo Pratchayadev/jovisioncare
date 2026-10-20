@@ -8,6 +8,7 @@ const items = [
   ["/admin/categories", "หมวดหมู่"],
   ["/admin/brands", "แบรนด์"],
   ["/admin/services", "บริการ"],
+  ["/admin/promotions", "โปรโมชัน"],
   ["/admin/articles", "บทความ"],
   ["/admin/reviews", "รีวิว IG"],
   ["/admin/settings", "ตั้งค่าร้าน"],

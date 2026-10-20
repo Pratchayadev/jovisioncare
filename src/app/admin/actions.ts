@@ -368,6 +368,8 @@ export async function saveArticle(_: FormState, f: FormData): Promise<FormState>
   if (dupe.length) return { error: "Slug นี้ถูกใช้แล้ว กรุณาเปลี่ยน" };
 
   const published = f.get("published") === "on";
+  const pubDate = str(f, "publishedAt");
+  if (pubDate && !/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/.test(pubDate)) return { error: "วันเวลาเผยแพร่ไม่ถูกต้อง" };
   const values: Partial<typeof t.articles.$inferInsert> = {
     title, slug,
     excerpt: opt(f, "excerpt"),
@@ -375,7 +377,7 @@ export async function saveArticle(_: FormState, f: FormData): Promise<FormState>
     coverAlt: opt(f, "coverAlt"),
     faq: faqJson(f),
     published,
-    publishedAt: published ? (current?.publishedAt ?? new Date()) : (current?.publishedAt ?? null),
+    publishedAt: pubDate ? new Date(`${pubDate}:00+07:00`) : published ? (current?.publishedAt ?? new Date()) : (current?.publishedAt ?? null),
     metaTitle: opt(f, "metaTitle"),
     metaDescription: opt(f, "metaDescription"),
   };
@@ -515,5 +517,63 @@ export async function toggleService(f: FormData) {
   if (!id) return;
   const s = await db.query.services.findFirst({ where: eq(t.services.id, id) });
   if (s) await db.update(t.services).set({ published: !s.published }).where(eq(t.services.id, id));
+  refresh();
+}
+
+/* ---------- Promotions (โปรโมชัน) ---------- */
+export async function savePromotion(_: FormState, f: FormData): Promise<FormState> {
+  await requireAdmin();
+  const id = int(f, "id");
+  const title = str(f, "title");
+  if (!title) return { error: "กรุณากรอกชื่อโปรโมชัน" };
+  const current = id ? await db.query.promotions.findFirst({ where: eq(t.promotions.id, id) }) : null;
+  if (id && !current) return { error: "ไม่พบโปรโมชันนี้ (อาจถูกลบไปแล้ว)" };
+  const ends = str(f, "endsAt");
+  if (ends && !/^\d{4}-\d{2}-\d{2}$/.test(ends)) return { error: "วันหมดเขตไม่ถูกต้อง" };
+  const image = files(f, "image")[0];
+  if (!image && !current?.image) return { error: "กรุณาเลือกรูปโปรโมชัน" };
+  const values: Partial<typeof t.promotions.$inferInsert> = {
+    title,
+    highlight: opt(f, "highlight"),
+    summary: opt(f, "summary"),
+    details: str(f, "details"),
+    imageAlt: opt(f, "imageAlt"),
+    branches: ["all", "udon", "nongkhai"].includes(str(f, "branches")) ? str(f, "branches") : "all",
+    endsAt: ends ? new Date(`${ends}T23:59:59+07:00`) : null,
+    featured: f.get("featured") === "on",
+    published: f.get("published") === "on",
+    sortOrder: int(f, "sortOrder") ?? 0,
+  };
+  let uploaded: string | null = null;
+  try {
+    if (image) uploaded = values.image = await saveImage(image, "promotions");
+    if (id) await db.update(t.promotions).set(values).where(eq(t.promotions.id, id));
+    else await db.insert(t.promotions).values(values as typeof t.promotions.$inferInsert);
+  } catch (e) {
+    if (uploaded) await deleteImage(uploaded);
+    return { error: friendly(e) };
+  }
+  if (image && current?.image) await deleteImage(current.image);
+  refresh();
+  redirect("/admin/promotions?saved=1");
+}
+
+export async function deletePromotion(f: FormData) {
+  await requireAdmin();
+  const id = int(f, "id");
+  if (!id) return;
+  const p = await db.query.promotions.findFirst({ where: eq(t.promotions.id, id) });
+  await db.delete(t.promotions).where(eq(t.promotions.id, id));
+  if (p?.image) await deleteImage(p.image);
+  refresh();
+  redirect("/admin/promotions?deleted=1");
+}
+
+export async function togglePromotion(f: FormData) {
+  await requireAdmin();
+  const id = int(f, "id");
+  if (!id) return;
+  const p = await db.query.promotions.findFirst({ where: eq(t.promotions.id, id) });
+  if (p) await db.update(t.promotions).set({ published: !p.published }).where(eq(t.promotions.id, id));
   refresh();
 }
