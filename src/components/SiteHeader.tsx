@@ -23,6 +23,7 @@ export default function SiteHeader({ hasReviews = false, hasArticles = false }: 
         {hasReviews && <Link href="/#reviews">รีวิวจาก IG</Link>}
         <Link href="/udon-thani">ร้านแว่นอุดร</Link>
         <Link href="/nong-khai">ร้านแว่นหนองคาย</Link>
+        <Link href="/services">บริการ</Link>
         {hasArticles && <Link href="/articles">บทความ</Link>}
       </nav>
     </header>

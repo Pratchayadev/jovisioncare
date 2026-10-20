@@ -6,7 +6,8 @@ import JsonLd from "./JsonLd";
 import ProductCard from "./ProductCard";
 import IgPost from "./IgPost";
 import { getBranches, getContact } from "@/lib/settings";
-import { getPublishedProducts, getPublishedReviews, toCard } from "@/lib/queries";
+import { getPublishedProducts, getPublishedReviews, getPublishedServices, serviceHref, toCard } from "@/lib/queries";
+import { servesBranch } from "@/lib/service-seo";
 import { clip, storePhotos, storePhotosNongKhai } from "@/lib/site";
 import { breadcrumbNode, opticianNode, organizationNode } from "@/lib/seo";
 import type { BranchId } from "@/lib/branches";
@@ -14,14 +15,6 @@ import type { BranchId } from "@/lib/branches";
 const PHOTOS: Record<BranchId, { src: string; alt: string }[]> = { udon: storePhotos, nongkhai: storePhotosNongKhai };
 
 // บริการที่ร้านระบุไว้ในข้อมูลร้าน (ข้อความส่วนท้ายเว็บจากดีไซน์)
-const SERVICES = [
-  ["ตรวจวัดสายตาอย่างละเอียด", "วัดค่าสายตาสั้น ยาว เอียง ด้วยเครื่องมือทันสมัย"],
-  ["ตัดแว่นสายตา", "ประกอบเลนส์ตามค่าสายตา เลือกกรอบได้หลายแบรนด์"],
-  ["เลนส์กรองแสงสีฟ้า", "สำหรับคนใช้มือถือและคอมพิวเตอร์นาน ๆ"],
-  ["เลนส์ออโต้ปรับแสง", "ในร่มใส ออกแดดเข้มขึ้นอัตโนมัติ"],
-  ["เลนส์โปรเกรสซีฟ", "มองได้ทั้งใกล้และไกลในเลนส์เดียว"],
-  ["แว่นกันแดดแบรนด์แท้", "BOLON, HELEN KELLER และแบรนด์อื่น ๆ"],
-] as const;
 
 async function load(id: BranchId) {
   const branches = await getBranches();
@@ -44,7 +37,8 @@ export async function branchMetadata(id: BranchId): Promise<Metadata> {
 }
 
 export default async function BranchPage({ id }: { id: BranchId }) {
-  const [{ b, other }, c, reviewsAll, products] = await Promise.all([load(id), getContact(), getPublishedReviews(), getPublishedProducts({ featuredOnly: true, limit: 8 })]);
+  const [{ b, other }, c, reviewsAll, products, servicesAll] = await Promise.all([load(id), getContact(), getPublishedReviews(), getPublishedProducts({ featuredOnly: true, limit: 8 }), getPublishedServices()]);
+  const services = servicesAll.filter((s) => servesBranch(s, id));
   const reviews = reviewsAll.filter((r) => r.branch === b.province);
   const photos = PHOTOS[id];
   const crumbs = [{ name: "หน้าแรก", url: "/" }, { name: `สาขา${b.province}`, url: b.path }];
@@ -118,8 +112,9 @@ export default async function BranchPage({ id }: { id: BranchId }) {
         <section className="bp-section" aria-labelledby="bp-services">
           <h2 id="bp-services" className="bp-h">บริการที่สาขา{b.province}</h2>
           <ul className="bp-services">
-            {SERVICES.map(([t, d]) => <li key={t}><b>{t}</b><span>{d}</span></li>)}
+            {services.map((s) => <li key={s.id}><Link href={serviceHref(s)}><b>{s.title} →</b>{s.summary && <span>{s.summary}</span>}</Link></li>)}
           </ul>
+          <Link href="/services" className="bp-all">ดูบริการทั้งหมด →</Link>
         </section>
 
         {reviews.length > 0 && (

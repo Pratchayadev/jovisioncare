@@ -454,3 +454,64 @@ export async function savePrivacy(_: FormState, f: FormData): Promise<FormState 
   refresh();
   return { ok: true };
 }
+
+/* ---------- Services (บริการ) ---------- */
+export async function saveService(_: FormState, f: FormData): Promise<FormState> {
+  await requireAdmin();
+  const id = int(f, "id");
+  const title = str(f, "title");
+  if (!title) return { error: "กรุณากรอกชื่อบริการ" };
+  const slug = slugify(str(f, "slug") || title);
+  if (!slug) return { error: "Slug ไม่ถูกต้อง" };
+  const hasPage = f.get("hasPage") === "on";
+  const linkUrl = opt(f, "linkUrl");
+  if (!hasPage && !linkUrl) return { error: "บริการที่ไม่มีหน้าของตัวเอง ต้องใส่ลิงก์ปลายทาง เช่น /category/sunglasses" };
+  if (linkUrl && !/^\/[^\s]*$/.test(linkUrl)) return { error: "ลิงก์ปลายทางต้องเป็นลิงก์ในเว็บ ขึ้นต้นด้วย / เช่น /brands" };
+  const branches = ["all", "udon", "nongkhai"].includes(str(f, "branches")) ? str(f, "branches") : "all";
+  const current = id ? await db.query.services.findFirst({ where: eq(t.services.id, id) }) : null;
+  if (id && !current) return { error: "ไม่พบบริการนี้ (อาจถูกลบไปแล้ว)" };
+  const dupe = await db.select({ id: t.services.id }).from(t.services).where(id ? and(eq(t.services.slug, slug), ne(t.services.id, id)) : eq(t.services.slug, slug));
+  if (dupe.length) return { error: "Slug นี้ถูกใช้แล้ว กรุณาเปลี่ยน" };
+  const values = {
+    title, slug, hasPage, linkUrl, branches,
+    summary: opt(f, "summary"),
+    content: str(f, "content"),
+    faq: faqJson(f),
+    published: f.get("published") === "on",
+    sortOrder: int(f, "sortOrder") ?? 0,
+    metaTitle: opt(f, "metaTitle"),
+    metaDescription: opt(f, "metaDescription"),
+  };
+  try {
+    if (id) await db.update(t.services).set(values).where(eq(t.services.id, id));
+    else await db.insert(t.services).values(values);
+    const oldPath = current?.hasPage ? `/services/${current.slug}` : null;
+    const newPath = hasPage ? `/services/${slug}` : linkUrl!;
+    if (oldPath && oldPath !== newPath) await recordMove(oldPath, newPath);
+    if (hasPage) await clearRedirect(`/services/${slug}`);
+  } catch (e) {
+    return { error: friendly(e) };
+  }
+  refresh();
+  redirect("/admin/services?saved=1");
+}
+
+export async function deleteService(f: FormData) {
+  await requireAdmin();
+  const id = int(f, "id");
+  if (!id) return;
+  const s = await db.query.services.findFirst({ where: eq(t.services.id, id) });
+  await db.delete(t.services).where(eq(t.services.id, id));
+  if (s?.hasPage && s.published) await recordMove(`/services/${s.slug}`, "/services");
+  refresh();
+  redirect("/admin/services?deleted=1");
+}
+
+export async function toggleService(f: FormData) {
+  await requireAdmin();
+  const id = int(f, "id");
+  if (!id) return;
+  const s = await db.query.services.findFirst({ where: eq(t.services.id, id) });
+  if (s) await db.update(t.services).set({ published: !s.published }).where(eq(t.services.id, id));
+  refresh();
+}

@@ -6,12 +6,13 @@ import { migrate } from "drizzle-orm/libsql/migrator";
 import { db, t } from "../lib/db";
 import { dbUrl } from "../lib/env";
 import { seed } from "./seed";
+import { SERVICE_SEED } from "./services-seed";
 
 const host = (() => { try { return new URL(dbUrl.replace(/^libsql:/, "https:")).host || dbUrl; } catch { return dbUrl; } })();
 
 async function counts() {
   const out: Record<string, number | string> = {};
-  for (const name of ["products", "categories", "brands", "reviews", "settings"]) {
+  for (const name of ["products", "categories", "brands", "reviews", "settings", "articles", "services"]) {
     try {
       const r = await db.all<{ n: number }>(sql.raw(`SELECT count(*) AS n FROM ${name}`));
       out[name] = r[0]?.n ?? 0;
@@ -30,6 +31,13 @@ async function main() {
   if (fresh && process.env.SKIP_SEED !== "1") {
     console.log("ฐานข้อมูลใหม่ — ใส่ข้อมูลตั้งต้น");
     await seed();
+  }
+  // ใส่บริการตั้งต้นครั้งเดียว (ถ้าลบบริการในหลังบ้านภายหลัง จะไม่ถูกใส่กลับ)
+  const flag = await db.query.settings.findFirst({ where: (s, { eq }) => eq(s.key, "services_seeded") });
+  if (!flag) {
+    for (const row of SERVICE_SEED) await db.insert(t.services).values(row).onConflictDoNothing();
+    await db.insert(t.settings).values({ key: "services_seeded", value: new Date().toISOString() }).onConflictDoNothing();
+    console.log(`[db] ใส่บริการตั้งต้น ${SERVICE_SEED.length} รายการ`);
   }
   // บันทึกเวลาที่ฐานข้อมูลนี้ถูกใช้ครั้งแรก — ถ้าค่านี้เปลี่ยน แปลว่าฐานข้อมูลถูกสร้างใหม่
   await db.insert(t.settings).values({ key: "db_initialized_at", value: new Date().toISOString() }).onConflictDoNothing();

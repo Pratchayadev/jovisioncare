@@ -81,3 +81,11 @@ export async function getBrandsWithCounts() {
   const m = new Map(counts.map((c) => [c.brandId, Number(c.n)]));
   return brands.map((b) => ({ ...b, count: m.get(b.id) ?? 0 }));
 }
+
+/* ---------- บริการ ---------- */
+export const getPublishedServices = () =>
+  db.query.services.findMany({ where: eq(t.services.published, true), orderBy: [asc(t.services.sortOrder), asc(t.services.id)] });
+export const getServiceBySlug = (slug: string) =>
+  db.query.services.findFirst({ where: and(eq(t.services.slug, slug), eq(t.services.published, true), eq(t.services.hasPage, true)) });
+/** ลิงก์ของบริการ: หน้าของตัวเอง หรือหน้าที่มีอยู่แล้ว */
+export const serviceHref = (s: { hasPage: boolean; slug: string; linkUrl: string | null }) => (s.hasPage ? `/services/${s.slug}` : s.linkUrl || "/services");

@@ -370,3 +370,20 @@ button { font-family: inherit; }
 .privacy-cookie { margin-top: 24px; font-size: 15px; }
 .privacy-cookie .linklike { color: var(--ink); text-decoration: underline; text-underline-offset: 3px; font-weight: 600; }
 .prose code { font-family: var(--font-mono); font-size: .88em; background: #ece9e5; padding: 1px 6px; border-radius: 6px; }
+
+/* บริการ */
+.svc-grid { list-style: none; margin: 0; padding: 0; display: grid; gap: 12px; grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr)); }
+.svc-card { height: 100%; display: grid; align-content: start; gap: 8px; background: #fff; border: 1px solid var(--line); border-radius: 18px; padding: 20px; transition: transform .2s ease, box-shadow .2s ease; }
+.svc-card:hover { transform: translateY(-2px); box-shadow: 0 10px 24px rgba(0,0,0,.06); }
+.svc-no { font-family: var(--font-mono); font-size: 12px; color: var(--muted-2); letter-spacing: .1em; }
+.svc-card h2 { margin: 0; font-size: 20px; line-height: 1.35; }
+.svc-card p { margin: 0; font-size: 14px; line-height: 1.65; color: var(--muted); }
+.svc-more { font-size: 13px; font-weight: 600; margin-top: 4px; }
+.svc-links { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; max-width: 760px; }
+.svc-links a { display: grid; gap: 2px; background: #fff; border: 1px solid var(--line); border-radius: 14px; padding: 14px 16px; }
+.svc-links b { font-size: 16px; }
+.svc-links span { font-size: 13px; color: var(--muted); line-height: 1.55; }
+.svc-branch-btns { display: flex; flex-wrap: wrap; gap: 8px; }
+.bp-services li:has(a) { padding: 0; }
+.bp-services a { display: grid; gap: 4px; padding: 16px; height: 100%; }
+.bp-all { display: inline-block; margin-top: 14px; font-size: 14px; font-weight: 600; border-bottom: 1.5px solid var(--ink); padding-bottom: 2px; }

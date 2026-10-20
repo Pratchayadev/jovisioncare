@@ -84,3 +84,23 @@ export function score(checks: Check[]) {
   const pts = graded.reduce((s, c) => s + (c.level === "ok" ? 1 : c.level === "warn" ? 0.5 : 0), 0);
   return Math.round((pts / graded.length) * 100);
 }
+
+export type ServiceInput = { title: string; summary: string; content: string; hasPage: boolean; faqCount: number; metaTitle: string; metaDescription: string };
+
+export function checkService(x: ServiceInput): Check[] {
+  const out: Check[] = [];
+  out.push(x.summary.trim().length >= 40 ? { level: "ok", text: "มีคำอธิบายสั้น" } : { level: "warn", text: "คำอธิบายสั้นควรมี 1–2 ประโยค (40+ ตัวอักษร) ใช้ในรายการบริการและหน้าสาขา" });
+  if (!x.hasPage) {
+    out.push({ level: "tip", text: "บริการนี้ไม่มีหน้าของตัวเอง — แสดงในรายการแล้วลิงก์ไปหน้าที่ระบุ" });
+    return out;
+  }
+  const len = plainText(x.content).length;
+  out.push(len >= 1200 ? { level: "ok", text: `เนื้อหา ${len.toLocaleString()} ตัวอักษร` } : len >= 600 ? { level: "warn", text: `เนื้อหา ${len.toLocaleString()} ตัวอักษร — หน้าบริการที่ติดอันดับมักอธิบายครบกว่านี้ (1,200+)` } : { level: "bad", text: `เนื้อหาสั้น (${len} ตัวอักษร) — อธิบายว่าบริการคืออะไร เหมาะกับใคร ขั้นตอน และข้อควรรู้` });
+  const h2 = (x.content.match(/^##\s+/gm) ?? []).length;
+  out.push(h2 >= 2 ? { level: "ok", text: `มีหัวข้อย่อย ${h2} หัวข้อ` } : { level: "warn", text: "แบ่งเนื้อหาด้วยหัวข้อ ## อย่างน้อย 2 หัวข้อ" });
+  const branchLinks = /\]\(\/(udon-thani|nong-khai)\)/.test(x.content);
+  out.push(branchLinks ? { level: "ok", text: "ลิงก์ไปหน้าสาขาแล้ว" } : { level: "warn", text: "ลิงก์ไปหน้าสาขา เช่น [สาขาอุดรธานี](/udon-thani)" });
+  if (!x.faqCount) out.push({ level: "tip", text: "เพิ่มคำถามที่พบบ่อย 2–3 ข้อ" });
+  metaChecks(x.metaTitle, x.title, x.metaDescription, out);
+  return out;
+}

@@ -5,17 +5,18 @@ import ContactSection from "@/components/ContactSection";
 import Reveal from "@/components/Reveal";
 import Analytics from "@/components/Analytics";
 import CookieBanner from "@/components/CookieBanner";
-import { getBrands, getCategories, getPublishedArticles, getPublishedReviews } from "@/lib/queries";
+import { getBrands, getCategories, getPublishedArticles, getPublishedReviews, getPublishedServices } from "@/lib/queries";
 import { getContact } from "@/lib/settings";
 
 export default async function SiteLayout({ children }: { children: React.ReactNode }) {
   const [categories, brands, reviews, c, articles] = await Promise.all([getCategories(), getBrands(), getPublishedReviews(), getContact(), getPublishedArticles(1)]);
+  const services = (await getPublishedServices()).filter((s) => s.hasPage).map((s) => ({ slug: s.slug, title: s.title }));
   return (
     <>
       <SiteHeader hasReviews={reviews.length > 0} hasArticles={articles.length > 0} />
       <main id="top">
         {children}
-        <ContactSection categories={categories} brands={brands} c={c} />
+        <ContactSection categories={categories} brands={brands} services={services} c={c} />
       </main>
       <QuickDock c={c} />
       <Reveal />

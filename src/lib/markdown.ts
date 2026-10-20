@@ -29,10 +29,17 @@ export function renderMarkdown(src: string | null | undefined): { html: string; 
   const used = new Set<string>();
   const out: string[] = [];
   // หัวข้อและรูปที่อยู่บรรทัดเดียว ให้แยกเป็นบล็อกของตัวเองเสมอ (แม้ไม่เว้นบรรทัด)
-  const blocks = (src ?? "")
-    .replace(/\r\n/g, "\n")
-    .replace(/^(#{1,3}\s+.+|!\[[^\]]*\]\([^)\s]+\))[ \t]*$/gm, "\n$1\n")
-    .split(/\n{2,}/);
+  // รายการ (- / 1.) และคำพูด (>) ที่อยู่ติดกับย่อหน้า ให้แยกเป็นบล็อกของตัวเอง
+  const kind = (l: string) => (/^\s*[-*]\s+/.test(l) ? "ul" : /^\s*\d+[.)]\s+/.test(l) ? "ol" : /^>/.test(l) ? "q" : l.trim() ? "p" : "");
+  const lines = (src ?? "").replace(/\r\n/g, "\n").replace(/^(#{1,3}\s+.+|!\[[^\]]*\]\([^)\s]+\))[ \t]*$/gm, "\n$1\n").split("\n");
+  const joined: string[] = [];
+  lines.forEach((l, i) => {
+    const prev = i ? kind(lines[i - 1]) : "";
+    const cur = kind(l);
+    if (prev && cur && prev !== cur) joined.push("");
+    joined.push(l);
+  });
+  const blocks = joined.join("\n").split(/\n{2,}/);
   for (const raw of blocks) {
     const block = raw.trim();
     if (!block) continue;

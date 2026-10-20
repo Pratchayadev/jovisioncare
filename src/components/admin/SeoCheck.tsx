@@ -1,8 +1,8 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
-import { checkArticle, checkProduct, checkTaxonomy, score, type Check } from "@/lib/seo-check";
+import { checkArticle, checkProduct, checkService, checkTaxonomy, score, type Check } from "@/lib/seo-check";
 
-type Kind = "product" | "article" | "taxonomy";
+type Kind = "product" | "article" | "taxonomy" | "service";
 const s = (f: FormData, k: string) => String(f.get(k) ?? "");
 const faqCount = (f: FormData) => { try { return (JSON.parse(s(f, "faq") || "[]") as { q: string; a: string }[]).filter((x) => x.q.trim() && x.a.trim()).length; } catch { return 0; } };
 const hasFile = (f: FormData, k: string) => f.getAll(k).some((x) => x instanceof File && x.size > 0);
@@ -25,6 +25,8 @@ function run(kind: Kind, form: HTMLFormElement): Check[] {
       cover: (!!s(f, "currentCover") && f.get("removeCover") !== "on") || hasFile(f, "cover"), coverAlt: s(f, "coverAlt"),
       metaTitle: s(f, "metaTitle"), metaDescription: s(f, "metaDescription"), faqCount: faqCount(f),
     });
+  if (kind === "service")
+    return checkService({ title: s(f, "title"), summary: s(f, "summary"), content: s(f, "content"), hasPage: f.get("hasPage") === "on", faqCount: faqCount(f), metaTitle: s(f, "metaTitle"), metaDescription: s(f, "metaDescription") });
   return checkTaxonomy({ name: s(f, "name"), description: s(f, "description"), content: s(f, "content"), faqCount: faqCount(f), metaTitle: s(f, "metaTitle"), metaDescription: s(f, "metaDescription") });
 }
 

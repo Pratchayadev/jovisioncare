@@ -4,7 +4,7 @@ import { paymentCards } from "@/lib/site";
 import type { Contact } from "@/lib/contact";
 import type { Brand, Category } from "@/db/schema";
 
-export default function ContactSection({ categories, brands, c }: { categories: Category[]; brands: Brand[]; c: Contact }) {
+export default function ContactSection({ categories, brands, services = [], c }: { categories: Category[]; brands: Brand[]; services?: { slug: string; title: string }[]; c: Contact }) {
   return (
     <section id="contact" className="contact dark" aria-labelledby="contact-title">
       <div className="wrap">
@@ -29,6 +29,10 @@ export default function ContactSection({ categories, brands, c }: { categories: 
             {categories.map((c) => (
               <Link key={c.id} href={`/category/${c.slug}`}>{c.name}</Link>
             ))}
+          </nav>
+          <nav aria-label="บริการ">
+            <Link href="/services">บริการทั้งหมด</Link>
+            {services.map((s) => <Link key={s.slug} href={`/services/${s.slug}`}>{s.title}</Link>)}
           </nav>
           <nav aria-label="แบรนด์">
             <Link href="/brands">แบรนด์ทั้งหมด</Link>

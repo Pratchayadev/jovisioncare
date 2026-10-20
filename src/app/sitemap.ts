@@ -1,15 +1,16 @@
 import type { MetadataRoute } from "next";
-import { eq } from "drizzle-orm";
+import { and, eq } from "drizzle-orm";
 import { db, t } from "@/lib/db";
 import { SITE_URL } from "@/lib/site";
 
 export const revalidate = 3600;
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const [products, categories, brands, articles] = await Promise.all([
+  const [products, categories, brands, services, articles] = await Promise.all([
     db.query.products.findMany({ where: eq(t.products.published, true), columns: { slug: true, updatedAt: true }, with: { images: { columns: { url: true } } } }),
     db.query.categories.findMany({ columns: { slug: true, updatedAt: true } }),
     db.query.brands.findMany({ columns: { slug: true, updatedAt: true } }),
+    db.query.services.findMany({ where: and(eq(t.services.published, true), eq(t.services.hasPage, true)), columns: { slug: true, updatedAt: true } }),
     db.query.articles.findMany({ where: eq(t.articles.published, true), columns: { slug: true, updatedAt: true, cover: true } }),
   ]);
   const abs = (u: string) => (u.startsWith("http") ? u : SITE_URL + u);
@@ -19,6 +20,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: SITE_URL + "/nong-khai", changeFrequency: "monthly", priority: 0.9 },
     { url: SITE_URL + "/products", changeFrequency: "weekly", priority: 0.8 },
     { url: SITE_URL + "/brands", changeFrequency: "monthly", priority: 0.7 },
+    { url: SITE_URL + "/services", changeFrequency: "monthly", priority: 0.8 },
+    ...services.map((s) => ({ url: `${SITE_URL}/services/${s.slug}`, lastModified: s.updatedAt, priority: 0.8 })),
     { url: SITE_URL + "/privacy", changeFrequency: "yearly", priority: 0.2 },
     ...(articles.length ? [{ url: SITE_URL + "/articles", changeFrequency: "weekly" as const, priority: 0.7 }] : []),
     ...articles.map((a) => ({ url: `${SITE_URL}/articles/${a.slug}`, lastModified: a.updatedAt, priority: 0.7, images: a.cover ? [abs(a.cover)] : undefined })),

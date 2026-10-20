@@ -107,6 +107,23 @@ export const articles = sqliteTable("articles", {
   ...timestamps,
 });
 
+// บริการของร้าน — จัดการได้ที่ /admin/services
+export const services = sqliteTable("services", {
+  id: integer("id").primaryKey({ autoIncrement: true }),
+  title: text("title").notNull(),
+  slug: text("slug").notNull().unique(),
+  summary: text("summary"), // 1–2 ประโยค ใช้ในรายการบริการและใต้หัวข้อ
+  content: text("content").notNull().default(""), // markdown
+  faq: text("faq"),
+  hasPage: integer("has_page", { mode: "boolean" }).notNull().default(true), // false = แสดงในรายการ แล้วลิงก์ไป linkUrl
+  linkUrl: text("link_url"), // เช่น /category/sunglasses
+  branches: text("branches").notNull().default("all"), // all | udon | nongkhai
+  published: integer("published", { mode: "boolean" }).notNull().default(true),
+  sortOrder: integer("sort_order").notNull().default(0),
+  ...seo,
+  ...timestamps,
+});
+
 // URL เก่า → URL ใหม่ (301) สร้างอัตโนมัติเมื่อเปลี่ยน slug หรือลบ
 export const redirects = sqliteTable("redirects", {
   fromPath: text("from_path").primaryKey(),
@@ -133,3 +150,4 @@ export type ProductImage = typeof productImages.$inferSelect;
 export type Review = typeof reviews.$inferSelect;
 export type Article = typeof articles.$inferSelect;
 export type Redirect = typeof redirects.$inferSelect;
+export type Service = typeof services.$inferSelect;
