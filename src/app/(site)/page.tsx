@@ -119,6 +119,7 @@ export default async function Home() {
             </Link>
           ))}
         </div>
+        <Link href="/brands" className="see-all">ดูทุกแบรนด์ →</Link>
       </section>
 
       <section id="branches" className="section" aria-labelledby="branches-title">

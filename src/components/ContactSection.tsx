@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { CookieSettingsButton } from "./CookieBanner";
 import { paymentCards } from "@/lib/site";
 import type { Contact } from "@/lib/contact";
 import type { Brand, Category } from "@/db/schema";
@@ -30,6 +31,7 @@ export default function ContactSection({ categories, brands, c }: { categories: 
             ))}
           </nav>
           <nav aria-label="แบรนด์">
+            <Link href="/brands">แบรนด์ทั้งหมด</Link>
             {brands.map((b) => (
               <Link key={b.id} href={`/brand/${b.slug}`}>{b.name}</Link>
             ))}
@@ -39,6 +41,10 @@ export default function ContactSection({ categories, brands, c }: { categories: 
             <div className="pay">{paymentCards.map((c) => <span key={c} title={c}>{c}</span>)}</div>
           </div>
           <p>J.O. Vision Care ร้านแว่นอุดร และร้านแว่นหนองคาย บริการตรวจวัดสายตา ตัดแว่นสายตาสั้น ยาว เอียง เลนส์กรองแสงสีฟ้า เลนส์ออโต้ปรับแสง เลนส์โปรเกรสซีฟ และแว่นกันแดดแบรนด์แท้</p>
+          <nav aria-label="นโยบาย">
+            <Link href="/privacy">นโยบายความเป็นส่วนตัว</Link>
+            <CookieSettingsButton />
+          </nav>
           <p className="mono" style={{ fontSize: 11, letterSpacing: ".08em" }}>© {new Date().getFullYear()} J.O. VISIONCARE</p>
         </footer>
       </div>

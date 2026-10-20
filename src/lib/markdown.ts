@@ -17,6 +17,7 @@ function inline(s: string) {
       const ext = /^https?:\/\//i.test(href) && !/jovisioncare\.com/i.test(href);
       return `<a href="${esc(href)}"${ext ? ' target="_blank" rel="noopener noreferrer"' : ""}>${text}</a>`;
     })
+    .replace(/`([^`]+)`/g, "<code>$1</code>")
     .replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>")
     .replace(/(^|[^*])\*([^*\s][^*]*)\*/g, "$1<em>$2</em>");
 }

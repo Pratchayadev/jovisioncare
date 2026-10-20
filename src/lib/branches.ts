@@ -23,6 +23,8 @@ export type BranchSettings = {
   opens: string; // "10:00"
   closes: string; // "20:00"
   days: Day[];
+  directions: string; // การเดินทาง/จุดสังเกต — 1 บรรทัดต่อ 1 ข้อ
+  parking: string; // ที่จอดรถ
 };
 
 /** ส่วนที่คงที่ (ผูกกับดีไซน์และ SEO) */
@@ -46,6 +48,8 @@ export const DEFAULT_BRANCHES: Record<BranchId, BranchSettings> = {
     opens: "10:00",
     closes: "20:00",
     days: ALL_DAYS,
+    directions: "",
+    parking: "",
   },
   nongkhai: {
     place: "ห้างอัศวรรณ 1 (ฝั่งโลตัส)",
@@ -59,6 +63,8 @@ export const DEFAULT_BRANCHES: Record<BranchId, BranchSettings> = {
     opens: "10:00",
     closes: "20:30",
     days: ALL_DAYS,
+    directions: "",
+    parking: "",
   },
 };
 

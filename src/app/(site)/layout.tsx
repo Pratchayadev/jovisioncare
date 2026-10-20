@@ -4,6 +4,7 @@ import QuickDock from "@/components/QuickDock";
 import ContactSection from "@/components/ContactSection";
 import Reveal from "@/components/Reveal";
 import Analytics from "@/components/Analytics";
+import CookieBanner from "@/components/CookieBanner";
 import { getBrands, getCategories, getPublishedArticles, getPublishedReviews } from "@/lib/queries";
 import { getContact } from "@/lib/settings";
 
@@ -19,6 +20,7 @@ export default async function SiteLayout({ children }: { children: React.ReactNo
       <QuickDock c={c} />
       <Reveal />
       <Analytics />
+      <CookieBanner />
     </>
   );
 }

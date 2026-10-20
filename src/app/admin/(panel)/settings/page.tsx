@@ -1,11 +1,12 @@
 import SettingsForm from "@/components/admin/SettingsForm";
 import BranchForm from "@/components/admin/BranchForm";
-import { getBranchSettings, getContactSettings } from "@/lib/settings";
+import PrivacyForm from "@/components/admin/PrivacyForm";
+import { getBranchSettings, getContactSettings, getPrivacy } from "@/lib/settings";
 
 export const dynamic = "force-dynamic";
 
 export default async function SettingsPage() {
-  const [s, b] = await Promise.all([getContactSettings(), getBranchSettings()]);
+  const [s, b, privacy] = await Promise.all([getContactSettings(), getBranchSettings(), getPrivacy()]);
   return (
     <>
       <div className="adm-head"><h1>ตั้งค่าร้าน</h1><span className="sub">บันทึกแล้วหน้าเว็บและข้อมูลสำหรับ Google เปลี่ยนตามทันที</span></div>
@@ -17,6 +18,8 @@ export default async function SettingsPage() {
       </div>
       <h2 style={{ fontSize: 17, margin: "8px 0 12px" }}>ช่องทางติดต่อ</h2>
       <SettingsForm s={s} />
+      <h2 style={{ fontSize: 17, margin: "32px 0 12px" }}>นโยบายความเป็นส่วนตัว (PDPA)</h2>
+      <PrivacyForm md={privacy.md} custom={privacy.custom} />
     </>
   );
 }

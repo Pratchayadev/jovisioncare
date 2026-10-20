@@ -18,6 +18,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: SITE_URL + "/udon-thani", changeFrequency: "monthly", priority: 0.9 },
     { url: SITE_URL + "/nong-khai", changeFrequency: "monthly", priority: 0.9 },
     { url: SITE_URL + "/products", changeFrequency: "weekly", priority: 0.8 },
+    { url: SITE_URL + "/brands", changeFrequency: "monthly", priority: 0.7 },
+    { url: SITE_URL + "/privacy", changeFrequency: "yearly", priority: 0.2 },
     ...(articles.length ? [{ url: SITE_URL + "/articles", changeFrequency: "weekly" as const, priority: 0.7 }] : []),
     ...articles.map((a) => ({ url: `${SITE_URL}/articles/${a.slug}`, lastModified: a.updatedAt, priority: 0.7, images: a.cover ? [abs(a.cover)] : undefined })),
     ...categories.map((c) => ({ url: `${SITE_URL}/category/${c.slug}`, lastModified: c.updatedAt, priority: 0.7 })),

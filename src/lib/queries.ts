@@ -1,5 +1,5 @@
 import "server-only";
-import { and, asc, desc, eq, ne } from "drizzle-orm";
+import { and, asc, desc, eq, ne, sql } from "drizzle-orm";
 import { db, t } from "./db";
 
 const withRelations = {
@@ -71,3 +71,13 @@ export const getPublishedReviews = () =>
 export const getPublishedArticles = (limit?: number) =>
   db.query.articles.findMany({ where: eq(t.articles.published, true), orderBy: [desc(t.articles.publishedAt), desc(t.articles.id)], limit });
 export const getArticleBySlug = (slug: string) => db.query.articles.findFirst({ where: and(eq(t.articles.slug, slug), eq(t.articles.published, true)) });
+
+/** แบรนด์ทั้งหมด พร้อมจำนวนสินค้าที่เผยแพร่ */
+export async function getBrandsWithCounts() {
+  const [brands, counts] = await Promise.all([
+    getBrands(),
+    db.select({ brandId: t.products.brandId, n: sql<number>`count(*)` }).from(t.products).where(eq(t.products.published, true)).groupBy(t.products.brandId),
+  ]);
+  const m = new Map(counts.map((c) => [c.brandId, Number(c.n)]));
+  return brands.map((b) => ({ ...b, count: m.get(b.id) ?? 0 }));
+}

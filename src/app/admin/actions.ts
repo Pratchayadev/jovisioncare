@@ -12,6 +12,7 @@ import { BRANCH_IDS, DAYS, parseLatLng } from "@/lib/branches";
 import { branchKey } from "@/lib/settings";
 import { clearRedirect, recordMove } from "@/lib/redirects";
 import { parseFaq } from "@/lib/faq";
+import { PRIVACY_KEY } from "@/lib/privacy";
 
 export type FormState = { error?: string } | undefined;
 
@@ -333,7 +334,7 @@ export async function saveBranch(_: FormState, f: FormData): Promise<FormState &
   const days = DAYS.map(([d]) => d).filter((d) => f.getAll("days").includes(d));
   if (!days.length) return { error: "เลือกวันที่เปิดอย่างน้อย 1 วัน" };
 
-  const value = JSON.stringify({ place, line1, subdistrict: str(f, "subdistrict").replace(/^ต\.\s*/, ""), district: district.replace(/^อ\.\s*/, ""), province: province.replace(/^จ\.\s*/, ""), postalCode, lat: pos.lat, lng: pos.lng, opens, closes, days });
+  const value = JSON.stringify({ place, line1, subdistrict: str(f, "subdistrict").replace(/^ต\.\s*/, ""), district: district.replace(/^อ\.\s*/, ""), province: province.replace(/^จ\.\s*/, ""), postalCode, lat: pos.lat, lng: pos.lng, opens, closes, days, directions: str(f, "directions").split("\n").map((l) => l.trim().replace(/^[-•*]\s*/, "")).filter(Boolean).slice(0, 12).join("\n"), parking: str(f, "parking").slice(0, 300) });
   await db.insert(t.settings).values({ key: branchKey(id), value }).onConflictDoUpdate({ target: t.settings.key, set: { value, updatedAt: new Date() } });
   refresh();
   return { ok: true };
@@ -442,4 +443,14 @@ export async function deleteRedirect(f: FormData) {
   const from = str(f, "id");
   if (from) await clearRedirect(from);
   refresh();
+}
+
+/* ---------- นโยบายความเป็นส่วนตัว ---------- */
+export async function savePrivacy(_: FormState, f: FormData): Promise<FormState & { ok?: boolean }> {
+  await requireAdmin();
+  const value = f.get("useDefault") === "on" ? "" : str(f, "privacy");
+  if (value && value.length < 200) return { error: "เนื้อหาสั้นเกินไป — ถ้าต้องการใช้ร่างตั้งต้น ให้ติ๊ก “กลับไปใช้ร่างตั้งต้น”" };
+  await db.insert(t.settings).values({ key: PRIVACY_KEY, value }).onConflictDoUpdate({ target: t.settings.key, set: { value, updatedAt: new Date() } });
+  refresh();
+  return { ok: true };
 }

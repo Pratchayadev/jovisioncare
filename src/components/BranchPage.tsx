@@ -93,6 +93,17 @@ export default async function BranchPage({ id }: { id: BranchId }) {
           </div>
         </section>
 
+        {(b.directions || b.parking) && (
+          <section className="bp-section" aria-labelledby="bp-way">
+            <h2 id="bp-way" className="bp-h">การเดินทางไปสาขา{b.province}</h2>
+            <div className="bp-way">
+              {b.directions && <ul>{b.directions.split("\n").map((l) => <li key={l}>{l}</li>)}</ul>}
+              {b.parking && <p><b>ที่จอดรถ:</b> {b.parking}</p>}
+              <a href={b.map} target="_blank" rel="noopener" className="pill solid" data-track-area="branch-way" data-track-branch={b.id}>เปิดเส้นทางใน Google Maps</a>
+            </div>
+          </section>
+        )}
+
         <section className="bp-section" aria-labelledby="bp-photos">
           <h2 id="bp-photos" className="bp-h">บรรยากาศร้าน สาขา{b.province}</h2>
           <div className={id === "udon" ? "store-photos" : "store-photos-wide"}>

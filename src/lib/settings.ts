@@ -1,6 +1,8 @@
 import "server-only";
 import { cache } from "react";
+import { eq } from "drizzle-orm";
 import { db, t } from "./db";
+import { DEFAULT_PRIVACY, PRIVACY_KEY } from "./privacy";
 import { buildContact, DEFAULT_CONTACT, SETTING_KEYS, type ContactSettings } from "./contact";
 import { BRANCH_IDS, buildBranch, DEFAULT_BRANCHES, type BranchId, type BranchSettings } from "./branches";
 
@@ -37,4 +39,10 @@ export const getBranchSettings = cache(async (): Promise<Record<BranchId, Branch
 export const getBranches = cache(async () => {
   const s = await getBranchSettings();
   return BRANCH_IDS.map((id) => buildBranch(id, s[id]));
+});
+
+/** นโยบายความเป็นส่วนตัว (markdown) + วันที่แก้ล่าสุด */
+export const getPrivacy = cache(async () => {
+  const row = await db.query.settings.findFirst({ where: eq(t.settings.key, PRIVACY_KEY) });
+  return { md: row?.value?.trim() ? row.value : DEFAULT_PRIVACY, updatedAt: row?.updatedAt ?? null, custom: !!row?.value?.trim() };
 });

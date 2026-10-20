@@ -45,6 +45,11 @@ export default function BranchForm({ id, title, s }: { id: BranchId; title: stri
         <small style={{ color: pos ? undefined : "var(--red)" }}>
           {pos ? <>ปุ่มนำทางจะพาไปที่ <a href={`https://www.google.com/maps/search/?api=1&query=${pos.lat},${pos.lng}`} target="_blank" rel="noopener" style={{ textDecoration: "underline" }}>{pos.lat}, {pos.lng}</a> — กดเพื่อเช็กหมุด</> : "อ่านพิกัดไม่ได้ — ใน Google Maps กดค้างที่หมุดร้าน แล้วคัดลอกตัวเลขพิกัดมาวาง"}
         </small></label>
+      <label className="fld"><span>การเดินทาง / จุดสังเกต</span>
+        <textarea name="directions" value={v.directions} onChange={(e) => setV((o) => ({ ...o, directions: e.target.value }))} style={{ minHeight: 90 }}
+          placeholder={"1 บรรทัดต่อ 1 ข้อ เช่น\nอยู่ในโครงการเจริญศรีปาร์ค ฝั่งริมหนองประจักษ์\nจากวงเวียน… ขับตรงมา… ร้านอยู่ซ้ายมือ"} />
+        <small>แสดงในหน้าสาขาเป็นหัวข้อ “การเดินทาง” — เว้นว่างได้ ส่วนนี้จะไม่แสดง</small></label>
+      <label className="fld"><span>ที่จอดรถ</span><input type="text" name="parking" value={v.parking} onChange={set("parking")} placeholder="เช่น จอดได้หน้าร้าน / ลานจอดของห้าง ฟรี" /></label>
       <div style={{ background: "#f7f6f4", borderRadius: 10, padding: 12, fontSize: 13, lineHeight: 1.7 }}>
         <b>แสดงบนเว็บ:</b><br />{preview.addr}<br />{preview.daysLabel} {preview.hours}
       </div>
