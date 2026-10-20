@@ -408,3 +408,5 @@ button { font-family: inherit; }
 .intl-footer a { color: #d9d6d2 !important; text-decoration: underline; text-underline-offset: 2px; }
 .intl .branch dl { grid-template-columns: auto 1fr; }
 .bp-langs { margin: 0; font-size: 15px; } .bp-langs a { text-decoration: underline; text-underline-offset: 3px; font-weight: 600; } .bp-langs a[lang="lo"] { font-family: "Noto Sans Lao", var(--font-th); }
+/* จอคอม: ยกข้อความ hero ขึ้นใกล้ header */
+@media (min-width: 900px) { .hero-body { padding-top: clamp(120px, 12vw, 200px); padding-bottom: 56px; } }
