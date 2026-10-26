@@ -7,7 +7,7 @@ import { db, t } from "../lib/db";
 import { dbUrl } from "../lib/env";
 import { seed } from "./seed";
 import { PROMO_SEED } from "./promos-seed";
-import { ARTICLE_SEED } from "./articles-seed";
+import { ARTICLE_SEED, ARTICLE_SEED_V2 } from "./articles-seed";
 import { EYE_EXAM_BEFORE_FREE, SERVICE_SEED, TURNAROUND_FAQ } from "./services-seed";
 import { eq } from "drizzle-orm";
 
@@ -107,6 +107,13 @@ async function main() {
     for (const row of ARTICLE_SEED) await db.insert(t.articles).values(row).onConflictDoNothing();
     await db.insert(t.settings).values({ key: "articles_v1", value: new Date().toISOString() }).onConflictDoNothing();
     console.log(`[db] ใส่บทความ ${ARTICLE_SEED.length} บทความ`);
+  }
+  // ครั้งเดียว: บทความชุดที่ 2 (ข้าม slug ที่มีอยู่แล้ว)
+  const art2Flag = await db.query.settings.findFirst({ where: (s, { eq }) => eq(s.key, "articles_v2") });
+  if (!art2Flag) {
+    for (const row of ARTICLE_SEED_V2) await db.insert(t.articles).values(row).onConflictDoNothing();
+    await db.insert(t.settings).values({ key: "articles_v2", value: new Date().toISOString() }).onConflictDoNothing();
+    console.log(`[db] ใส่บทความชุดที่ 2 ${ARTICLE_SEED_V2.length} บทความ`);
   }
   // บันทึกเวลาที่ฐานข้อมูลนี้ถูกใช้ครั้งแรก — ถ้าค่านี้เปลี่ยน แปลว่าฐานข้อมูลถูกสร้างใหม่
   await db.insert(t.settings).values({ key: "db_initialized_at", value: new Date().toISOString() }).onConflictDoNothing();
